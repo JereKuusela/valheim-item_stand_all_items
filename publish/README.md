@@ -9,5 +9,8 @@ This mod removes item restrictions from item stands which allows putting there a
 3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
 
 # Changelog
+- v1.1.0: 
+	- Fixed some items not appearing
+
 - v1.0.0: 
 	- Initial release
