@@ -2,20 +2,20 @@
 
 This mod removes item restrictions from item stands which allows putting there any item.
 
-# Warning
-
-The latest version uses an intrusive way of attaching items that works for more items but has a higher risk of causing issues if there are mod conflicts (even corrupting save games).
-
-I have tested this both locally and on multiplayer but let me know if you run into any issues. If you are afraid of losing your world, you can use the config to support less items with a less intrusive way of attaching.
-
 # Manual Installation:
 
 1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 2. Download the latest zip
 3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
 
-
 # Changelog
+
+- v1.3.0: 
+	- Added a new less instrusive attach method (automatically used for items that support it).
+	- Added a setting to revert back to v1.2.0 behavior.
+	- Added removal of the root rotation (to fix weird angles of some items).
+	- Added a setting to disable the automatic rotation removal.
+	- Added a setting to disable the automatic offset removal (implemented in v1.2.0).
 
 - v1.2.0: 
 	- Added support for seeds.
