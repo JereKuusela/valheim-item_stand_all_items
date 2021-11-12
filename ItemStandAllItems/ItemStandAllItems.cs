@@ -1,74 +1,16 @@
 ﻿using System.Collections.Generic;
 using BepInEx;
-using BepInEx.Configuration;
-using UnityEngine;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ItemStandAllItems {
-  [BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.3.0.0")]
+
+  [BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.4.0.0")]
   public class ItemStandAllItems : BaseUnityPlugin {
-    public static ConfigEntry<bool> configUseLegacyAttaching;
-    public static ConfigEntry<bool> configPreventItemsWithItemDrop;
-    public static ConfigEntry<bool> configRemoveRootOffset;
-    public static ConfigEntry<bool> configRemoveRootRotation;
-    public static ConfigEntry<bool> configPreferRootObject;
     public void Awake() {
-      configUseLegacyAttaching = Config.Bind("General", "UseLegacyAttaching", false, "Use the previous attach way on version 1.1.0 (works for less items)");
-      configPreventItemsWithItemDrop = Config.Bind("General", "PreventItemDrops", false, "Enable for less instrusive approach (works for less items).");
-      configRemoveRootOffset = Config.Bind("General", "RemoveRootOffset", true, "Some items (like Carrot seeds) have a weird offset at the root level.");
-      configRemoveRootRotation = Config.Bind("General", "RemoveRootRotation", true, "Some items (like Iron ingots) have a weird rotation at the root level.");
-      configPreferRootObject = Config.Bind("General", "PreferRootObject", false, "Use the root object instead of searching for a more suitable child object (1.2.0 behavior).");
       var harmony = new Harmony("valheim.jere.item_stand_all_items");
+      Settings.Init(Config);
       harmony.PatchAll();
-    }
-
-    private static GameObject GetAttachObject(GameObject item) {
-      if (configUseLegacyAttaching.Value) {
-        // Legacy way only finds the object with a collider.
-        // May not contain all models of the item resulting only in a partial item (like Graydward eye will miss the eye).
-        var collider = item.transform.GetComponentInChildren<Collider>();
-        if (collider) {
-          return collider.transform.gameObject;
-        }
-      } else {
-        if (!configPreferRootObject.Value) {
-          var child = GetRenderingChild(item);
-          if (child != item) {
-            return child;
-          }
-        }
-        if (configRemoveRootOffset.Value) {
-          item.transform.localPosition = Vector3.zero;
-        }
-
-        if (configRemoveRootRotation.Value) {
-          item.transform.localRotation = Quaternion.identity;
-        }
-        // New way always returns the whole item. This means extra components must be removed.
-        return item;
-      }
-      return null;
-    }
-    // Copypaste from base game code.
-    private static GameObject GetTransform(GameObject item, string name) {
-      var transform = item.transform.Find(name);
-      return transform ? transform.gameObject : null;
-    }
-    // In most cases the child object is better since it doesn't contain bad transform or ItemDrop component.
-    // However this won't work if there are multiple children (like with Carrot seeds).
-    private static GameObject GetRenderingChild(GameObject item) {
-      return item.GetComponent<MeshRenderer>() || item.transform.childCount != 1 ? item : item.transform.GetChild(0).gameObject;
-    }
-    public static GameObject GetAttach(GameObject item) {
-      // Base game also uses "attach" transform but explicitly disabled for some items.
-      // Check it first as it's the safest pick.
-      var obj = GetTransform(item, "attach");
-      if (obj) {
-        return obj;
-      }
-
-      obj = GetAttachObject(item);
-      return obj && configPreventItemsWithItemDrop.Value && obj.GetComponent<ItemDrop>() ? null : obj;
     }
   }
 
@@ -76,50 +18,54 @@ namespace ItemStandAllItems {
   [HarmonyPatch(typeof(ItemStand), "CanAttach")]
   public class ItemStand_CanAttach {
     public static void Postfix(ItemStand __instance, ItemDrop.ItemData item, ref bool __result) {
-      if (!__result && __instance.m_name == "$piece_itemstand") {
-        __result = ItemStandAllItems.GetAttach(item.m_dropPrefab) != null;
-      }
+      if (__result) return;
+      if (__instance.m_name != "$piece_itemstand") return;
+      __result = Attacher.GetAttach(item.m_dropPrefab) != null;
     }
   }
-
 
   // Adds additional check with the custom attach code.
   [HarmonyPatch(typeof(ItemStand), "GetAttachPrefab")]
   public class ItemStand_GetAttachPrefab {
     public static void Postfix(GameObject item, ref GameObject __result) {
       if (__result == null) {
-        __result = ItemStandAllItems.GetAttach(item);
+        __result = Attacher.GetAttach(item);
       }
     }
   }
 
   [HarmonyPatch(typeof(ItemStand), "SetVisualItem")]
   public class ItemStand_SetVisualItem {
-    public static Dictionary<ZDO, ZNetView> Instances(ZNetScene obj) {
-      return Traverse.Create(obj).Field<Dictionary<ZDO, ZNetView>>("m_instances").Value;
-    }
-
-    public static void Postfix(GameObject ___m_visualItem) {
-      if (___m_visualItem && !ItemStandAllItems.configPreventItemsWithItemDrop.Value) {
-        Object.Destroy(___m_visualItem.GetComponent<ItemDrop>());
-        Object.Destroy(___m_visualItem.GetComponent<Rigidbody>());
-        Object.Destroy(___m_visualItem.GetComponent<ZSyncTransform>());
-        Object.Destroy(___m_visualItem.GetComponent<ParticleSystem>());
-        var zNetView = ___m_visualItem.GetComponent<ZNetView>();
-        if (zNetView) {
-          // This is needed to stop placed item stop acting as a item drop in multiplayer.
-          // Copypaste from ZNetScene::Destroy (but without actually destroying the object).
-          var zdo = zNetView.GetZDO();
-          if (zdo != null) {
-            zNetView.ResetZDO();
-            _ = Instances(ZNetScene.instance).Remove(zdo);
-            if (zdo.IsOwner()) {
-              ZDOMan.instance.DestroyZDO(zdo);
-            }
-          }
-          Object.Destroy(zNetView);
-        }
+    ///<summary>Replaces ItemDrop script with an empty dummy object.</summary>
+    private static void ReplaceItemDrop(ItemStand obj) {
+      var item = obj.m_visualItem;
+      if (item == null || item.GetComponent<ItemDrop>() == null) return;
+      var attach = item.transform.parent;
+      var dummy = Object.Instantiate<GameObject>(new GameObject(), attach.position, attach.rotation, attach);
+      dummy.layer = item.layer;
+      var children = new List<GameObject>();
+      foreach (Transform child in item.transform) {
+        if (child.gameObject.layer != dummy.layer) continue;
+        children.Add(child.gameObject);
       }
+      foreach (GameObject child in children)
+        child.transform.SetParent(dummy.transform, false);
+      ZNetScene.instance.Destroy(item);
+      obj.m_visualItem = dummy;
+    }
+    ///<summary>Updates local transformation according to settings.</summary>
+    private static void UpdateTransform(ItemStand obj) {
+      var item = obj.m_visualItem;
+      if (item == null) return;
+      var transformations = Settings.CustomTransformations();
+      if (!transformations.TryGetValue(obj.m_visualName.ToLower(), out var transformation)) return;
+      item.transform.localPosition = transformation.Position;
+      item.transform.localRotation = transformation.Rotation;
+      item.transform.localScale = transformation.Scale;
+    }
+    public static void Postfix(ItemStand __instance) {
+      ReplaceItemDrop(__instance);
+      UpdateTransform(__instance);
     }
   }
 }
