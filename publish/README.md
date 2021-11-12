@@ -28,7 +28,7 @@ For example:
 # Changelog
 
 - v1.4.0:
-	- Improved attaching-
+	- Improved attaching.
 	- Added setting to allow custom position, rotation and scaling for attached items.
 	- Removed some settings as obsolete.
 	- Fixed conflict with Epic Loot.
