@@ -1,4 +1,3 @@
-
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -15,49 +14,106 @@ namespace ItemStandAllItems {
 
     public static ConfigEntry<bool> configUseLegacyAttaching;
     public static bool UseLegacyAttaching => configUseLegacyAttaching.Value;
+    public static ConfigEntry<bool> configHideStandsWithItem;
+    public static bool HideStandsWithItem => configHideStandsWithItem.Value;
+    public static ConfigEntry<bool> configMoveCloser;
+    public static bool MoveCloser => configMoveCloser.Value;
+    public static ConfigEntry<bool> configEnableTransformations;
+    public static bool EnableTransformations => configEnableTransformations.Value;
     public static ConfigEntry<string> configCustomTransformations;
-    private static bool Parse(string arg, out float number) => float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
+    private static bool Parse(List<string> args, int index, out float number) {
+      var arg = index < args.Count() ? args[index] : "";
+      return float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
+    }
 
+    ///<summary>Parses custom transformations from the config.</summary>
     public static Dictionary<string, CustomTransformation> CustomTransformations() {
       var split = configCustomTransformations.Value.Split('|');
       var dict = new Dictionary<string, CustomTransformation>();
       foreach (var item in split) {
         var args = item.Split(',').Select(value => value.Trim()).ToList();
         if (args.Count() < 1) continue;
+        if (args[0] == "") continue;
         var position = Vector3.zero;
-        if (args.Count() >= 4) {
-          if (!Parse(args[1], out var x)) continue;
-          if (!Parse(args[2], out var y)) continue;
-          if (!Parse(args[3], out var z)) continue;
-          position = new Vector3(x, y, z);
-        }
+        if (Parse(args, 1, out var number))
+          position.y = number;
+        if (Parse(args, 2, out number))
+          position.x = number;
+        if (Parse(args, 3, out number))
+          position.z = number;
         var rotation = Quaternion.identity;
-        if (args.Count() >= 7) {
-          if (!Parse(args[4], out var a)) continue;
-          if (!Parse(args[5], out var b)) continue;
-          if (!Parse(args[6], out var c)) continue;
-          rotation = Quaternion.Euler(a, b, c);
-        }
+        if (Parse(args, 4, out number))
+          rotation.x = number;
+        if (Parse(args, 5, out number))
+          rotation.y = number;
+        if (Parse(args, 6, out number))
+          rotation.z = number;
         var scale = Vector3.one;
-        if (args.Count() >= 10) {
-          if (!Parse(args[7], out var i)) continue;
-          if (!Parse(args[8], out var j)) continue;
-          if (!Parse(args[9], out var k)) continue;
-          scale = new Vector3(i, j, k);
-        }
+        if (Parse(args, 7, out number))
+          scale.x = number;
+        if (Parse(args, 8, out number))
+          scale.y = number;
+        if (Parse(args, 9, out number))
+          scale.z = number;
         var transformation = new CustomTransformation()
         {
           Position = position,
           Rotation = rotation,
           Scale = scale
         };
-        dict.Add(args[0].ToLower(), transformation);
+        if (!dict.ContainsKey(args[0].ToLower()))
+          dict.Add(args[0].ToLower(), transformation);
       }
       return dict;
     }
     public static void Init(ConfigFile config) {
-      configUseLegacyAttaching = config.Bind("General", "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items)");
-      configCustomTransformations = config.Bind("General", "Custom transformations", "", "Apply custom position and rotation to attached items with format id1,x1,y1,z1,a1,b1,c1,i1,k1,j1|id2,x2,y2,z2,a2,b2,c2,i2,k2,j2");
+      var section = "General";
+      configHideStandsWithItem = config.Bind(section, "Hide item stands which have items", false, "If true, hide stands are hidden when they have an item.");
+      configUseLegacyAttaching = config.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
+      configMoveCloser = config.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
+      configCustomTransformations = config.Bind(section, "Custom transformations", "", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
+      configEnableTransformations = config.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
+    }
+    private static Dictionary<string, Vector3> OriginalPositions = new Dictionary<string, Vector3>();
+    ///<summary>Offsets the attached item according to the config.</summary>
+    public static void Offset(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+      if (!EnableTransformations) return;
+      var name = obj.m_visualName.ToLower();
+      var item = obj.m_visualItem;
+      if (!OriginalPositions.ContainsKey(name)) OriginalPositions.Add(name, item.transform.localPosition);
+      var offset = Vector3.zero;
+      if (transformations.TryGetValue(name, out var transformation))
+        offset = transformation.Position;
+      var original = OriginalPositions[name];
+      // Rotation causes y-coordinate to determine the distance.
+      var parent = new Vector3(item.transform.parent.localPosition.y, item.transform.parent.localPosition.z, item.transform.parent.localPosition.x);
+      item.transform.localPosition = original + offset - (MoveCloser ? parent : Vector3.zero);
+    }
+    private static Dictionary<string, Quaternion> OriginalRotations = new Dictionary<string, Quaternion>();
+    ///<summary>Rotates the attached item according to the config.</summary>
+    public static void Rotate(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+      if (!EnableTransformations) return;
+      var name = obj.m_visualName.ToLower();
+      var item = obj.m_visualItem;
+      if (!OriginalRotations.ContainsKey(name)) OriginalRotations.Add(name, item.transform.localRotation);
+      var rotation = Quaternion.identity;
+      if (transformations.TryGetValue(name, out var transformation))
+        rotation = transformation.Rotation;
+      var original = OriginalRotations[name];
+      item.transform.localRotation = original * rotation;
+    }
+    private static Dictionary<string, Vector3> OriginalScales = new Dictionary<string, Vector3>();
+    ///<summary>Scales the attached item according to the config.</summary>
+    public static void Scale(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+      if (!EnableTransformations) return;
+      var name = obj.m_visualName.ToLower();
+      var item = obj.m_visualItem;
+      if (!OriginalScales.ContainsKey(name)) OriginalScales.Add(name, item.transform.localScale);
+      var scale = Vector3.one;
+      if (transformations.TryGetValue(name, out var transformation))
+        scale = transformation.Scale;
+      var original = OriginalScales[name];
+      item.transform.localScale = new Vector3(original.x * scale.x, original.y * scale.y, original.z * scale.z);
     }
   }
 }

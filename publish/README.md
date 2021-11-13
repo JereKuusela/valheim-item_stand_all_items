@@ -2,6 +2,8 @@
 
 This mod removes item restrictions from item stands which allows putting there any item.
 
+Additionally allows customizing the item positions.
+
 # Manual Installation:
 
 1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
@@ -10,22 +12,46 @@ This mod removes item restrictions from item stands which allows putting there a
 
 # Settings
 
-"Use legacy attaching" uses the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
+- Use legacy attaching: Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
+- Hide item stands which have items: If true, item stands with items will be invisible.
+- Enable transformations: Must be true for "Move items closer" and "Custom transformations" to work. These require some extra computing which may lower performance with massive amounts of item stands.
+- Move items closer: Removes the base offset from item stands to make items attach closer to the wall.
+- Custom transformations: Allows modifying position, rotation and scale of each item to have them exactly like you want.
 
-"Custom transformations" allow customizing how the items get attached. The format is id1,x1,y1,z1,a1,b1,c1,i1,k1,j1|id2,x2,y2,z2,a2,b2,c2,i2,k2,j2|...
+# Custom transformations
+
+The format is id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...
 
 - id: Id of item (check wiki for item ids if needed).
-- x, y, z: Position offset. If not given, then 0,0,0 is used.
-- a, b, c: Rotation. If not given, then 0,0,0 is used.
-- i, j, k: Scaling. If not given, then 1,1,1 is used.
+- distance: Distance from the item stand (use negative value to move closer).
+- offset: Position offset to x and y directions.
+- rotation: Rotation to different directions.
+- scale: Scaling to different directions (usually you want the same number for each value).
 
 For example:
 
 - Wood,0,0,0,0,0,0,10,10,10 would cause attached wood items to have 10x size.
 - Wood,0,0,0,0,0,20 would rotate attached wood items slightly.
-- Wood,0,0,0.1 would move attached wood items slightly.
+- Wood,-0.1|CarrotSoup,-0.1 would move carrot soup and wood items slightly towards the item stand.
+
+# How it works
+
+The mod uses a few different ways to attach the items:
+
+1. The default way is to use "attach" child object of items. This is how the base game works. However not all items have this child object.
+2. The next way is to check if the item has a single child object and use that. This requires some extra logic to filter out unnecessary child objects but otherwise works the same as "attach" child object.
+3. If there are multiple children, then the whole item must be used. Unfortunately the parent object contains scripts like ItemDrop which would make the item fall on ground (basically duplicating it). In this case, a dummy object is created to replace the parent object.
+
+The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
+
 
 # Changelog
+
+- v1.5.0:
+	- Added setting to hide item stands with items.
+	- Added setting to have items closer towards the item stand.
+	- Improved custom transformations (applied gradually instead of overwriting natural transformation).
+	- Swapped parameters in custom transformations so that the distance is first (probably the most needed).
 
 - v1.4.0:
 	- Improved attaching.
