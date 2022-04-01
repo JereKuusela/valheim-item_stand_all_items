@@ -68,7 +68,7 @@ public static class Settings {
     return dict;
   }
   public static void Init(ConfigSync configSync, ConfigFile configFile) {
-    ConfigWrapper wrapper = new("item_stand", configFile, configSync);
+    ConfigWrapper wrapper = new("itemstand_config", configFile, configSync);
     var section = "General";
     configHideStandsWithItem = wrapper.Bind(section, "Hide item stands which have items", false, "If true, hide stands are hidden when they have an item.");
     configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
@@ -86,10 +86,11 @@ public static class Settings {
     var offset = Vector3.zero;
     if (transformations.TryGetValue(name, out var transformation))
       offset = transformation.Position;
+    var custom = obj.m_nview.GetZDO().GetVec3("offset", Vector3.zero);
     var original = OriginalPositions[name];
     // Rotation causes y-coordinate to determine the distance.
     Vector3 parent = new(item.transform.parent.localPosition.y, item.transform.parent.localPosition.z, item.transform.parent.localPosition.x);
-    item.transform.localPosition = original + offset - (MoveCloser ? parent : Vector3.zero);
+    item.transform.localPosition = original + offset + custom - (MoveCloser ? parent : Vector3.zero);
   }
   private static Dictionary<string, Quaternion> OriginalRotations = new();
   ///<summary>Rotates the attached item according to the config.</summary>
@@ -101,8 +102,9 @@ public static class Settings {
     var rotation = Quaternion.identity;
     if (transformations.TryGetValue(name, out var transformation))
       rotation = transformation.Rotation;
+    var custom = Quaternion.Euler(obj.m_nview.GetZDO().GetVec3("rotation", Vector3.zero));
     var original = OriginalRotations[name];
-    item.transform.localRotation = original * rotation;
+    item.transform.localRotation = original * rotation * custom;
   }
   private static Dictionary<string, Vector3> OriginalScales = new();
   ///<summary>Scales the attached item according to the config.</summary>
@@ -115,6 +117,7 @@ public static class Settings {
     if (transformations.TryGetValue(name, out var transformation))
       scale = transformation.Scale;
     var original = OriginalScales[name];
-    item.transform.localScale = new(original.x * scale.x, original.y * scale.y, original.z * scale.z);
+    var custom = obj.m_nview.GetZDO().GetVec3("scale", Vector3.one);
+    item.transform.localScale = new(original.x * scale.x * custom.x, original.y * scale.y * custom.y, original.z * scale.z * custom.z);
   }
 }

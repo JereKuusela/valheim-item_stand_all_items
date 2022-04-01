@@ -1,19 +1,26 @@
 ﻿using BepInEx;
+using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 namespace ItemStandAllItems;
 [BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.6.0.0")]
 public class ItemStandAllItems : BaseUnityPlugin {
+  public static bool IsServerDevcommands = false;
   ServerSync.ConfigSync ConfigSync = new("valheim.jere.item_stand_all_items")
   {
     DisplayName = "ItemStandAllItems",
     CurrentVersion = "1.6.0",
     MinimumRequiredVersion = "1.6.0"
   };
+  public static ManualLogSource Log;
   public void Awake() {
+    Log = Logger;
     Settings.Init(ConfigSync, Config);
     Harmony harmony = new("valheim.jere.item_stand_all_items");
     harmony.PatchAll();
+  }
+  public void Start() {
+    CommandWrapper.Init();
   }
 }
 
@@ -54,3 +61,9 @@ public class ItemStand_DropItem {
   }
 }
 
+[HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
+public class SetCommands {
+  static void Postfix() {
+    new ItemStandCommand();
+  }
+}
