@@ -1,9 +1,9 @@
 {
   "name": "Item_Stand_All_Items",
-  "version_number": "1.5.0",
+  "version_number": "1.6.0",
   "website_url": "https://github.com/JereKuusela/valheim-item_stand_all_items",
   "description": "Removes item restrictions from item stands and adds customization.",
   "dependencies": [
-    "denikson-BepInExPack_Valheim-5.4.1601"
+    "denikson-BepInExPack_Valheim-5.4.1900"
   ]
 }

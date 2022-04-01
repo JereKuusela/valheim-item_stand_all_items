@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using BepInEx.Configuration;
+using ServerSync;
+using Service;
 using UnityEngine;
 namespace ItemStandAllItems;
 public class CustomTransformation {
@@ -65,13 +67,14 @@ public static class Settings {
     }
     return dict;
   }
-  public static void Init(ConfigFile config) {
+  public static void Init(ConfigSync configSync, ConfigFile configFile) {
+    ConfigWrapper wrapper = new("item_stand", configFile, configSync);
     var section = "General";
-    configHideStandsWithItem = config.Bind(section, "Hide item stands which have items", false, "If true, hide stands are hidden when they have an item.");
-    configUseLegacyAttaching = config.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
-    configMoveCloser = config.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
-    configCustomTransformations = config.Bind(section, "Custom transformations", "", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
-    configEnableTransformations = config.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
+    configHideStandsWithItem = wrapper.Bind(section, "Hide item stands which have items", false, "If true, hide stands are hidden when they have an item.");
+    configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
+    configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
+    configCustomTransformations = wrapper.Bind(section, "Custom transformations", "", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
+    configEnableTransformations = wrapper.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
   }
   private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>

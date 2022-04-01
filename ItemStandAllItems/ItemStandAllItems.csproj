@@ -21,6 +21,9 @@
     <Reference Include="UnityEngine.ParticleSystemModule.dll">
       <HintPath>..\Libs\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI.dll">
+      <HintPath>..\Libs\UnityEngine.UI.dll</HintPath>
+    </Reference>
     <Reference Include="0Harmony.dll">
       <HintPath>..\Libs\0Harmony.dll</HintPath>
     </Reference>
@@ -29,6 +32,9 @@
     </Reference>
     <Reference Include="assembly_valheim_publicized.dll">
       <HintPath>..\Libs\assembly_valheim_publicized.dll</HintPath>
+    </Reference>
+    <Reference Include="assembly_utils_publicized.dll">
+      <HintPath>..\Libs\assembly_utils_publicized.dll</HintPath>
     </Reference>
   </ItemGroup>
 

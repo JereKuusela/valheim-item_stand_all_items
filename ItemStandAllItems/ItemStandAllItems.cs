@@ -2,11 +2,17 @@
 using HarmonyLib;
 using UnityEngine;
 namespace ItemStandAllItems;
-[BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.5.0.0")]
+[BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.6.0.0")]
 public class ItemStandAllItems : BaseUnityPlugin {
+  ServerSync.ConfigSync ConfigSync = new("valheim.jere.item_stand_all_items")
+  {
+    DisplayName = "ItemStandAllItems",
+    CurrentVersion = "1.6.0",
+    MinimumRequiredVersion = "1.6.0"
+  };
   public void Awake() {
+    Settings.Init(ConfigSync, Config);
     Harmony harmony = new("valheim.jere.item_stand_all_items");
-    Settings.Init(Config);
     harmony.PatchAll();
   }
 }

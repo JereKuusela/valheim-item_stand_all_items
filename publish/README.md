@@ -1,16 +1,18 @@
 # Item Stand All Items
 
-This mod removes item restrictions from item stands which allows putting there any item.
+Client side mod that allows putting any item on item stands.
 
 Additionally allows customizing the item positions.
 
 # Manual Installation:
 
 1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
-2. Download the latest zip
+2. Download the latest zip.
 3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
 
 # Settings
+
+Config syncing is available if also installed on the server.
 
 - Use legacy attaching: Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
 - Hide item stands which have items: If true, item stands with items will be invisible.
@@ -47,33 +49,36 @@ The legacy attaching uses the first children. This means the whole is never retu
 
 # Changelog
 
-- v1.5.0:
-	- Added setting to hide item stands with items.
-	- Added setting to have items closer towards the item stand.
-	- Improved custom transformations (applied gradually instead of overwriting natural transformation).
-	- Swapped parameters in custom transformations so that the distance is first (probably the most needed).
+- v1.6:
+	- Adds config syncing (if installed server side).
 
-- v1.4.0:
-	- Improved attaching.
-	- Added setting to allow custom position, rotation and scaling for attached items.
-	- Removed some settings as obsolete.
-	- Fixed conflict with Epic Loot.
+- v1.5:
+	- Adds setting to hide item stands with items.
+	- Adds setting to have items closer towards the item stand.
+	- Improves custom transformations (applied gradually instead of overwriting natural transformation).
+	- Changes parameters in custom transformations so that the distance is first (probably the most needed).
 
-- v1.3.0:
-	- Added a new less instrusive attach method (automatically used for items that support it).
-	- Added a setting to revert back to v1.2.0 behavior.
-	- Added removal of the root rotation (to fix weird angles of some items).
-	- Added a setting to disable the automatic rotation removal.
-	- Added a setting to disable the automatic offset removal (implemented in v1.2.0).
+- v1.4:
+	- Improves attaching.
+	- Adds setting to allow custom position, rotation and scaling for attached items.
+	- Removes some settings as obsolete.
+	- Fixes conflict with Epic Loot.
 
-- v1.2.0:
-	- Added support for seeds.
-	- Added glow back to attached Greydwarf Eyes.
-	- Added setting which allows using the attach method from the previous version.
-	- Added setting for less supported items but also less intrusive attach method.
+- v1.3:
+	- Adds a new less instrusive attach method (automatically used for items that support it).
+	- Adds a setting to revert back to v1.2 behavior.
+	- Adds removal of the root rotation (to fix weird angles of some items).
+	- Adds a setting to disable the automatic rotation removal.
+	- Adds a setting to disable the automatic offset removal (implemented in v1.2).
 
-- v1.1.0:
-	- Fixed some items not appearing
+- v1.2:
+	- Adds support for seeds.
+	- Adds glow back to attached Greydwarf Eyes.
+	- Adds setting which allows using the attach method from the previous version.
+	- Adds setting for less supported items but also less intrusive attach method.
 
-- v1.0.0: 
-	- Initial release
+- v1.1:
+	- Fixes some items not appearing.
+
+- v1.0: 
+	- Initial release.
