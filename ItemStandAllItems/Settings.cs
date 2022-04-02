@@ -21,6 +21,10 @@ public static class Settings {
   public static bool MoveCloser => configMoveCloser.Value;
   public static ConfigEntry<bool> configEnableTransformations;
   public static bool EnableTransformations => configEnableTransformations.Value;
+  public static ConfigEntry<string> configMaximumScale;
+  public static float MaximumScale => ConfigWrapper.TryParseFloat(configMaximumScale);
+  public static ConfigEntry<string> configMaximumOffset;
+  public static float MaximumOffset => ConfigWrapper.TryParseFloat(configMaximumOffset);
   public static ConfigEntry<string> configCustomTransformations;
   private static bool Parse(List<string> args, int index, out float number) {
     var arg = index < args.Count() ? args[index] : "";
@@ -75,6 +79,8 @@ public static class Settings {
     configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
     configCustomTransformations = wrapper.Bind(section, "Custom transformations", "", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
     configEnableTransformations = wrapper.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
+    configMaximumOffset = wrapper.Bind(section, "Maximum offset", "", "Maximum distance for the offset.");
+    configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the total size.");
   }
   private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>
@@ -87,6 +93,8 @@ public static class Settings {
     if (transformations.TryGetValue(name, out var transformation))
       offset = transformation.Position;
     var custom = obj.m_nview.GetZDO().GetVec3("offset", Vector3.zero);
+    var max = Settings.MaximumOffset;
+    if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     var original = OriginalPositions[name];
     // Rotation causes y-coordinate to determine the distance.
     Vector3 parent = new(item.transform.parent.localPosition.y, item.transform.parent.localPosition.z, item.transform.parent.localPosition.x);
@@ -118,6 +126,8 @@ public static class Settings {
       scale = transformation.Scale;
     var original = OriginalScales[name];
     var custom = obj.m_nview.GetZDO().GetVec3("scale", Vector3.one);
+    var max = Settings.MaximumScale;
+    if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     item.transform.localScale = new(original.x * scale.x * custom.x, original.y * scale.y * custom.y, original.z * scale.z * custom.z);
   }
 }

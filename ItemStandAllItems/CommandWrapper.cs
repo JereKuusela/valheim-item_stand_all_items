@@ -32,6 +32,17 @@ public static class CommandWrapper {
   }
   public static List<string> FRU(string description, int index) {
     if (ServerDevcommands == null) return null;
-    return GetMethod(InfoType(), "XYZ", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
+    return GetMethod(InfoType(), "FRU", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
+  }
+
+  public static List<string> Info(string value) {
+    if (ServerDevcommands == null) return null;
+    return GetMethod(InfoType(), "Create", new[] { typeof(string) }).Invoke(null, new[] { value }) as List<string>;
+  }
+  public static List<string> RollPitchYaw(string description, int index) {
+    if (index == 0) return Info($"<color=yellow>roll</color>,pitch,yaw | {description}.");
+    if (index == 1) return Info($"roll,<color=yellow>pitch</color>,yaw | {description}.");
+    if (index == 2) return Info($"roll,pitch,<color=yellow>yaw</color> | {description}.");
+    return null;
   }
 }

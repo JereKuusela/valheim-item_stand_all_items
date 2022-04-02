@@ -2,23 +2,15 @@ using System.Globalization;
 using UnityEngine;
 namespace ItemStandAllItems;
 public class Helper {
-  public static Vector3 ParseZYX(string value) {
+  public static Vector3 ParseYXZ(string value) {
     var vector = Vector3.zero;
     var split = value.Split(',');
-    if (split.Length > 2) vector.x = Helper.ParseFloat(split[2]);
-    if (split.Length > 1) vector.y = Helper.ParseFloat(split[1]);
-    if (split.Length > 0) vector.z = Helper.ParseFloat(split[0]);
+    if (split.Length > 1) vector.x = Helper.ParseFloat(split[1]);
+    if (split.Length > 0) vector.y = Helper.ParseFloat(split[0]);
+    if (split.Length > 2) vector.z = Helper.ParseFloat(split[2]);
     return vector;
   }
-  public static Vector3 ParseXZY(string value) {
-    var vector = Vector3.zero;
-    var split = value.Split(',');
-    if (split.Length > 0) vector.x = Helper.ParseFloat(split[0]);
-    if (split.Length > 2) vector.y = Helper.ParseFloat(split[2]);
-    if (split.Length > 1) vector.z = Helper.ParseFloat(split[1]);
-    return vector;
-  }
-  public static Vector3 ParseScale(string value) => SanityCheck(ParseXZY(value));
+  public static Vector3 ParseScale(string value) => SanityCheck(ParseYXZ(value));
   private static Vector3 SanityCheck(Vector3 scale) {
     // Sanity check and also adds support for setting all values with a single number.
     if (scale.x == 0) scale.x = 1;
