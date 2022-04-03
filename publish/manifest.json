@@ -2,7 +2,7 @@
   "name": "Item_Stand_All_Items",
   "version_number": "1.6.0",
   "website_url": "https://github.com/JereKuusela/valheim-item_stand_all_items",
-  "description": "Removes item restrictions from item stands and adds customization.",
+  "description": "Allows putting any item on item stands and customize their transformations. The config can be synced by installing on the server.",
   "dependencies": [
     "denikson-BepInExPack_Valheim-5.4.1900"
   ]

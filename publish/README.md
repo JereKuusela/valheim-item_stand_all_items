@@ -1,8 +1,8 @@
 # Item Stand All Items
 
-Client side mod that allows putting any item on item stands.
+Client side mod that allows putting any item on item stands and customizing the item transformations.
 
-Additionally allows customizing the item positions.
+The config can be synced by also installing on the server.
 
 # Manual Installation:
 
@@ -10,17 +10,18 @@ Additionally allows customizing the item positions.
 2. Download the latest zip.
 3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
 
-# Settings
+# Configuration
 
-Config syncing is available if also installed on the server.
+- Custom transformations (key: `custom_transformations`): Allows setting default offset, rotation and scale for each item. See below for more info.
+- Enable transformations (default: `false`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
+- Hide automatically (default: `false`, key: `hide_automatically`): Hides item stands which have items.
+- Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.
+- Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
+- Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
+- Use legacy attaching (default: `false`, key: `use_legacy_attaching`): Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
 
-- Use legacy attaching: Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
-- Hide item stands which have items: If true, item stands with items will be invisible.
-- Enable transformations: Must be true for "Move items closer" and "Custom transformations" to work. These require some extra computing which may lower performance with massive amounts of item stands.
-- Move items closer: Removes the base offset from item stands to make items attach closer to the wall.
-- Custom transformations: Allows modifying position, rotation and scale of each item to have them exactly like you want.
 
-# Custom transformations
+## Custom transformations
 
 The format is id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...
 
@@ -51,6 +52,12 @@ The legacy attaching uses the first children. This means the whole is never retu
 
 - v1.6:
 	- Adds config syncing (if installed server side).
+	- Adds a command `itemstand_offset` to set offset of an individual item stand.
+	- Adds a command `itemstand_rotation` to set rotation of an individual item stand.
+	- Adds a command `itemstand_scale` to set scale of an individual item stand.
+	- Adds a command `itemstand_config` which allows changing settings.
+	- Adds a setting `maximum_offset` to limit how far items can be from item stands.
+	- Adds a setting `maximum_scale` to limit how big items can be on item stands.
 
 - v1.5:
 	- Adds setting to hide item stands with items.

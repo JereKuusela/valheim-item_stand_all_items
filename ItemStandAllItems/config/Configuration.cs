@@ -11,12 +11,12 @@ public class CustomTransformation {
   public Quaternion Rotation;
   public Vector3 Scale;
 }
-public static class Settings {
+public static class Configuration {
 
   public static ConfigEntry<bool> configUseLegacyAttaching;
   public static bool UseLegacyAttaching => configUseLegacyAttaching.Value;
-  public static ConfigEntry<bool> configHideStandsWithItem;
-  public static bool HideStandsWithItem => configHideStandsWithItem.Value;
+  public static ConfigEntry<bool> configHideAutomatically;
+  public static bool HideAutomatically => configHideAutomatically.Value;
   public static ConfigEntry<bool> configMoveCloser;
   public static bool MoveCloser => configMoveCloser.Value;
   public static ConfigEntry<bool> configEnableTransformations;
@@ -74,13 +74,13 @@ public static class Settings {
   public static void Init(ConfigSync configSync, ConfigFile configFile) {
     ConfigWrapper wrapper = new("itemstand_config", configFile, configSync);
     var section = "General";
-    configHideStandsWithItem = wrapper.Bind(section, "Hide item stands which have items", false, "If true, hide stands are hidden when they have an item.");
+    configHideAutomatically = wrapper.Bind(section, "Hide automatically", false, "If true, hide stands are hidden when they have an item.");
     configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
     configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
     configCustomTransformations = wrapper.Bind(section, "Custom transformations", "", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
     configEnableTransformations = wrapper.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
-    configMaximumOffset = wrapper.Bind(section, "Maximum offset", "", "Maximum distance for the offset.");
-    configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the total size.");
+    configMaximumOffset = wrapper.Bind(section, "Maximum offset", "", "Maximum distance for the item offset.");
+    configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the item size.");
   }
   private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>
@@ -93,7 +93,7 @@ public static class Settings {
     if (transformations.TryGetValue(name, out var transformation))
       offset = transformation.Position;
     var custom = obj.m_nview.GetZDO().GetVec3("offset", Vector3.zero);
-    var max = Settings.MaximumOffset;
+    var max = Configuration.MaximumOffset;
     if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     var original = OriginalPositions[name];
     // Rotation causes y-coordinate to determine the distance.
@@ -126,7 +126,7 @@ public static class Settings {
       scale = transformation.Scale;
     var original = OriginalScales[name];
     var custom = obj.m_nview.GetZDO().GetVec3("scale", Vector3.one);
-    var max = Settings.MaximumScale;
+    var max = Configuration.MaximumScale;
     if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     item.transform.localScale = new(original.x * scale.x * custom.x, original.y * scale.y * custom.y, original.z * scale.z * custom.z);
   }

@@ -30,7 +30,7 @@ public class Attacher {
     // Check it first as it's the safest pick.
     var obj = GetTransform(item, "attach");
     if (obj) return obj;
-    if (Settings.UseLegacyAttaching) return GetAttachObjectLegacy(item);
+    if (Configuration.UseLegacyAttaching) return GetAttachObjectLegacy(item);
     // Child object is preferred as it won't contain ItemDrop script or weird transformation.
     var childModel = GetChildModel(item);
     if (childModel)
@@ -40,9 +40,9 @@ public class Attacher {
   ///<summary>Hides the item stand if it has an item.</summary>
   public static void HideIfItem(ItemStand obj) {
     if (!Enabled(obj)) return;
-    if (!Settings.HideStandsWithItem) return;
+    if (!Configuration.HideStandsWithItem) return;
     var item = obj.m_visualItem;
-    var show = !obj.HaveAttachment() || !Settings.HideStandsWithItem;
+    var show = !obj.HaveAttachment() || !Configuration.HideStandsWithItem;
     // Layer check to filter the attached item.
     var renderers = obj.GetComponentsInChildren<MeshRenderer>().Where(renderer => item == null || renderer.gameObject.layer == obj.gameObject.layer);
     foreach (var renderer in renderers) {
@@ -54,10 +54,10 @@ public class Attacher {
   public static void UpdateItemTransform(ItemStand obj) {
     if (!Attacher.Enabled(obj)) return;
     if (obj.m_visualItem == null) return;
-    var transformations = Settings.CustomTransformations();
-    Settings.Offset(transformations, obj);
-    Settings.Rotate(transformations, obj);
-    Settings.Scale(transformations, obj);
+    var transformations = Configuration.CustomTransformations();
+    Configuration.Offset(transformations, obj);
+    Configuration.Rotate(transformations, obj);
+    Configuration.Scale(transformations, obj);
   }
   ///<summary>Replaces ItemDrop script with an empty dummy object.</summary>
   public static void ReplaceItemDrop(ItemStand obj) {

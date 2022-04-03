@@ -15,7 +15,7 @@ public class ItemStandAllItems : BaseUnityPlugin {
   public static ManualLogSource Log;
   public void Awake() {
     Log = Logger;
-    Settings.Init(ConfigSync, Config);
+    Configuration.Init(ConfigSync, Config);
     Harmony harmony = new("valheim.jere.item_stand_all_items");
     harmony.PatchAll();
   }
