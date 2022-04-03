@@ -37,12 +37,20 @@ public class Attacher {
       return childModel;
     return item;
   }
+  private static HashSet<ZDOID> HideCache = new();
+
   ///<summary>Hides the item stand if it has an item.</summary>
   public static void HideIfItem(ItemStand obj) {
     if (!Enabled(obj)) return;
-    if (!Configuration.HideStandsWithItem) return;
+    var zdo = obj.m_nview.GetZDO();
+    var hideValue = zdo.GetInt("hide", 0);
+    if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
     var item = obj.m_visualItem;
-    var show = !obj.HaveAttachment() || !Configuration.HideStandsWithItem;
+    var show = !obj.HaveAttachment() || hideValue < 1;
+    var previous = !HideCache.Contains(zdo.m_uid);
+    if (show == previous) return;
+    if (show) HideCache.Remove(zdo.m_uid);
+    else HideCache.Add(zdo.m_uid);
     // Layer check to filter the attached item.
     var renderers = obj.GetComponentsInChildren<MeshRenderer>().Where(renderer => item == null || renderer.gameObject.layer == obj.gameObject.layer);
     foreach (var renderer in renderers) {

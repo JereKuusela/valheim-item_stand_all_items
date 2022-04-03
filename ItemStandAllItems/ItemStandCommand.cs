@@ -37,12 +37,19 @@ public class ItemStandCommand {
       if (index == 0) return CommandWrapper.Scale("Sets the scale", subIndex);
       return null;
     });
-    new Terminal.ConsoleCommand("itemstand_scale", "[forward,up,right=1,1,1] - Sets the offset.", (Terminal.ConsoleEventArgs args) => {
+    new Terminal.ConsoleCommand("itemstand_scale", "[x,y,z=1,1,1] - Sets the offset.", (Terminal.ConsoleEventArgs args) => {
       var itemStand = GetHovered(args.Context);
       if (!itemStand) return;
       var value = Vector3.one;
       if (args.Length > 1) value = Helper.ParseScale(args[1]);
       itemStand.m_nview.GetZDO().Set("scale", value);
+    });
+    new Terminal.ConsoleCommand("itemstand_hide", "[-1/0/1] - Sets whether the item stand automatically hides when it has an item.", (Terminal.ConsoleEventArgs args) => {
+      var itemStand = GetHovered(args.Context);
+      if (!itemStand) return;
+      var value = 0;
+      if (args.Length > 1) value = (int)Helper.ParseFloat(args[1]);
+      itemStand.m_nview.GetZDO().Set("hide", value);
     });
   }
 }

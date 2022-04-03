@@ -12,6 +12,15 @@ The config can be synced by also installing on the server.
 
 # Configuration
 
+If transformations are enabled, the hovered item stand be configured with commands:
+
+- `itemstand_hide [-1/0/1]`: Sets automatic hiding. 1 to hide, 0 to use the default value and -1 to always show.
+- `itemstand_offset [forward,right,up=0,0,0]`: Sets the item offset. Limited by maximum offset setting.
+- `itemstand_rotation [roll,pitch,yaw=0,0,0]`: Sets the item rotation.
+- `itemstand_scale [x,y,z=1,1,1]`: Sets the item scale. Limited by maximum scale setting.
+
+Following settings are available:
+
 - Custom transformations (key: `custom_transformations`): Allows setting default offset, rotation and scale for each item. See below for more info.
 - Enable transformations (default: `false`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
 - Hide automatically (default: `false`, key: `hide_automatically`): Hides item stands which have items.
@@ -19,7 +28,6 @@ The config can be synced by also installing on the server.
 - Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
 - Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
 - Use legacy attaching (default: `false`, key: `use_legacy_attaching`): Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
-
 
 ## Custom transformations
 
@@ -47,7 +55,6 @@ The mod uses a few different ways to attach the items:
 
 The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
 
-
 # Changelog
 
 - v1.6:
@@ -55,6 +62,7 @@ The legacy attaching uses the first children. This means the whole is never retu
 	- Adds a command `itemstand_offset` to set offset of an individual item stand.
 	- Adds a command `itemstand_rotation` to set rotation of an individual item stand.
 	- Adds a command `itemstand_scale` to set scale of an individual item stand.
+	- Adds a command `itemstand_hide` to set automatic hiding for an individual item stand.
 	- Adds a command `itemstand_config` which allows changing settings.
 	- Adds a setting `maximum_offset` to limit how far items can be from item stands.
 	- Adds a setting `maximum_scale` to limit how big items can be on item stands.
