@@ -9,6 +9,7 @@ The config can be synced by also installing on the server.
 1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 2. Download the latest zip.
 3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
+4. Optionally also install the [Configuration manager](url=https://github.com/BepInEx/BepInEx.ConfigurationManager/releases/tag/v16.4).
 
 # Configuration
 
@@ -57,7 +58,7 @@ The legacy attaching uses the first children. This means the whole is never retu
 
 # Changelog
 
-- v1.6:
+- v1.6
 	- Adds config syncing (if installed server side).
 	- Adds a command `itemstand_offset` to set offset of an individual item stand.
 	- Adds a command `itemstand_rotation` to set rotation of an individual item stand.
@@ -67,33 +68,33 @@ The legacy attaching uses the first children. This means the whole is never retu
 	- Adds a setting `maximum_offset` to limit how far items can be from item stands.
 	- Adds a setting `maximum_scale` to limit how big items can be on item stands.
 
-- v1.5:
+- v1.5
 	- Adds setting to hide item stands with items.
 	- Adds setting to have items closer towards the item stand.
 	- Improves custom transformations (applied gradually instead of overwriting natural transformation).
 	- Changes parameters in custom transformations so that the distance is first (probably the most needed).
 
-- v1.4:
+- v1.4
 	- Improves attaching.
 	- Adds setting to allow custom position, rotation and scaling for attached items.
 	- Removes some settings as obsolete.
 	- Fixes conflict with Epic Loot.
 
-- v1.3:
+- v1.3
 	- Adds a new less instrusive attach method (automatically used for items that support it).
 	- Adds a setting to revert back to v1.2 behavior.
 	- Adds removal of the root rotation (to fix weird angles of some items).
 	- Adds a setting to disable the automatic rotation removal.
 	- Adds a setting to disable the automatic offset removal (implemented in v1.2).
 
-- v1.2:
+- v1.2
 	- Adds support for seeds.
 	- Adds glow back to attached Greydwarf Eyes.
 	- Adds setting which allows using the attach method from the previous version.
 	- Adds setting for less supported items but also less intrusive attach method.
 
-- v1.1:
+- v1.1
 	- Fixes some items not appearing.
 
-- v1.0: 
+- v1.0
 	- Initial release.
