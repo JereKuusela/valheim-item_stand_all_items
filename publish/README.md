@@ -18,7 +18,7 @@ If transformations are enabled, the hovered item stand be configured with comman
 - `itemstand_hide [-1/0/1]`: Sets automatic hiding. 1 to hide, 0 to use the default value and -1 to always show.
 - `itemstand_offset [forward,right,up=0,0,0]`: Sets the item offset. Limited by maximum offset setting.
 - `itemstand_rotation [roll,pitch,yaw=0,0,0]`: Sets the item rotation.
-- `itemstand_scale [x,y,z=1,1,1]`: Sets the item scale. Limited by maximum scale setting.
+- `itemstand_scale [x,y,z=1,1,1]`: Sets the item scale. A single value sets all sides. Limited by maximum scale setting.
 
 Following settings are available:
 
