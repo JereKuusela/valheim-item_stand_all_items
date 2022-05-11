@@ -13,8 +13,15 @@ public class Attacher {
   ///<summary>Returns the only child (if possible).</summary>
   private static GameObject? GetChildModel(GameObject item) {
     GameObject? onlyChild = null;
+    // Prioritize the item layer (some have secondary transformations for equipping).
     foreach (Transform child in item.transform) {
       if (child.gameObject.layer != item.layer) continue;
+      if (onlyChild) return null;
+      onlyChild = child.gameObject;
+    }
+    if (onlyChild) return onlyChild;
+    // Accept other layers as well (Acorn fix).
+    foreach (Transform child in item.transform) {
       if (onlyChild) return null;
       onlyChild = child.gameObject;
     }
