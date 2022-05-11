@@ -3,14 +3,14 @@ using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 namespace ItemStandAllItems;
-[BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.6.0.0")]
+[BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.7.0.0")]
 public class ItemStandAllItems : BaseUnityPlugin {
   public static bool IsServerDevcommands = false;
   ServerSync.ConfigSync ConfigSync = new("valheim.jere.item_stand_all_items")
   {
     DisplayName = "ItemStandAllItems",
-    CurrentVersion = "1.6.0",
-    MinimumRequiredVersion = "1.6.0"
+    CurrentVersion = "1.7.0",
+    MinimumRequiredVersion = "1.7.0"
   };
   public static ManualLogSource Log;
   public void Awake() {

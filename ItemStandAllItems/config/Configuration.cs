@@ -13,6 +13,7 @@ public class CustomTransformation {
 }
 public static class Configuration {
 
+  public static ConfigEntry<bool> configLocked;
   public static ConfigEntry<bool> configUseLegacyAttaching;
   public static bool UseLegacyAttaching => configUseLegacyAttaching.Value;
   public static ConfigEntry<bool> configHideAutomatically;
@@ -74,6 +75,7 @@ public static class Configuration {
   public static void Init(ConfigSync configSync, ConfigFile configFile) {
     ConfigWrapper wrapper = new("itemstand_config", configFile, configSync);
     var section = "General";
+    configLocked = wrapper.BindLocking(section, "Config locked", false, "When true, server sets the config values.");
     configHideAutomatically = wrapper.Bind(section, "Hide automatically", false, "If true, hide stands are hidden when they have an item.");
     configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
     configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");

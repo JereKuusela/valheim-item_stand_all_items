@@ -4,7 +4,7 @@ Client side mod that allows putting any item on item stands and customizing the 
 
 The config can be synced by also installing on the server.
 
-# Manual Installation:
+# Manual Installation
 
 1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
 2. Download the latest zip.
@@ -57,6 +57,9 @@ The mod uses a few different ways to attach the items:
 The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
 
 # Changelog
+
+- v1.7
+	- Adds the missing config lock setting to the config sync.
 
 - v1.6
 	- Adds config syncing (if installed server side).
