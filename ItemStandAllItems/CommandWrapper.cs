@@ -4,7 +4,7 @@ using System.Reflection;
 using BepInEx.Bootstrap;
 namespace ItemStandAllItems;
 public static class CommandWrapper {
-  public static Assembly ServerDevcommands = null;
+  public static Assembly? ServerDevcommands = null;
   public static void Init() {
     if (Chainloader.PluginInfos.TryGetValue("valheim.jerekuusela.server_devcommands", out var info)) {
       if (info.Metadata.Version.Major == 1 && info.Metadata.Version.Minor < 13) {
@@ -15,10 +15,10 @@ public static class CommandWrapper {
     }
   }
   private static BindingFlags PublicBinding = BindingFlags.Static | BindingFlags.Public;
-  private static Type Type() => ServerDevcommands.GetType("ServerDevcommands.AutoComplete");
-  private static Type InfoType() => ServerDevcommands.GetType("ServerDevcommands.ParameterInfo");
+  private static Type Type() => ServerDevcommands!.GetType("ServerDevcommands.AutoComplete");
+  private static Type InfoType() => ServerDevcommands!.GetType("ServerDevcommands.ParameterInfo");
   private static MethodInfo GetMethod(Type type, string name, Type[] types) => type.GetMethod(name, PublicBinding, null, CallingConventions.Standard, types, null);
-  public static void Register(string command, Func<int, int, List<string>> action) {
+  public static void Register(string command, Func<int, int, List<string>?> action) {
     if (ServerDevcommands == null) return;
     GetMethod(Type(), "Register", new[] { typeof(string), typeof(Func<int, int, List<string>>) }).Invoke(null, new object[] { command, action });
   }
@@ -26,6 +26,7 @@ public static class CommandWrapper {
     if (ServerDevcommands == null) return;
     GetMethod(Type(), "Register", new[] { typeof(string), typeof(Func<int, List<string>>) }).Invoke(null, new object[] { command, action });
   }
+#nullable disable
   public static List<string> Scale(string description, int index) {
     if (ServerDevcommands == null) return null;
     return GetMethod(InfoType(), "Scale", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
@@ -40,9 +41,8 @@ public static class CommandWrapper {
     return GetMethod(InfoType(), "Create", new[] { typeof(string) }).Invoke(null, new[] { value }) as List<string>;
   }
   public static List<string> RollPitchYaw(string description, int index) {
-    if (index == 0) return Info($"<color=yellow>roll</color>,pitch,yaw | {description}.");
-    if (index == 1) return Info($"roll,<color=yellow>pitch</color>,yaw | {description}.");
-    if (index == 2) return Info($"roll,pitch,<color=yellow>yaw</color> | {description}.");
-    return null;
+    if (ServerDevcommands == null) return null;
+    return GetMethod(InfoType(), "RollPitchYaw", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
   }
+#nullable enable
 }

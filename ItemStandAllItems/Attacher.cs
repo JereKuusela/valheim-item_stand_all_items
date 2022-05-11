@@ -5,14 +5,14 @@ namespace ItemStandAllItems;
 public class Attacher {
   public static bool Enabled(ItemStand obj) => obj && obj.m_name == "$piece_itemstand";
   ///<summary>Legacy only finds the object with a collider. May not contain all models of the item resulting only in a partial item (like Graydward eye will miss the eye).</summary>
-  private static GameObject GetAttachObjectLegacy(GameObject item) {
+  private static GameObject? GetAttachObjectLegacy(GameObject item) {
     var collider = item.transform.GetComponentInChildren<Collider>();
     return collider ? collider.transform.gameObject : null;
   }
 
   ///<summary>Returns the only child (if possible).</summary>
-  private static GameObject GetChildModel(GameObject item) {
-    GameObject onlyChild = null;
+  private static GameObject? GetChildModel(GameObject item) {
+    GameObject? onlyChild = null;
     foreach (Transform child in item.transform) {
       if (child.gameObject.layer != item.layer) continue;
       if (onlyChild) return null;
@@ -21,15 +21,15 @@ public class Attacher {
     return onlyChild;
   }
   ///<summary>Finds a given transform. Copypaste from base game code.</summary>
-  private static GameObject GetTransform(GameObject item, string name) {
+  private static GameObject? GetTransform(GameObject item, string name) {
     var transform = item.transform.Find(name);
     return transform ? transform.gameObject : null;
   }
-  public static GameObject GetAttach(GameObject item) {
+  public static GameObject? GetAttach(GameObject item) {
     // Base game also uses "attach" transform but explicitly disabled for some items.
     // Check it first as it's the safest pick.
     var obj = GetTransform(item, "attach");
-    if (obj) return obj;
+    if (obj != null) return obj;
     if (Configuration.UseLegacyAttaching) return GetAttachObjectLegacy(item);
     // Child object is preferred as it won't contain ItemDrop script or weird transformation.
     var childModel = GetChildModel(item);
@@ -38,6 +38,12 @@ public class Attacher {
     return item;
   }
   private static HashSet<ZDOID> HideCache = new();
+  public static void RemoveFromHideCache(ItemStand obj) {
+    if (!obj.m_nview) return;
+    var zdo = obj.m_nview.GetZDO();
+    if (zdo != null)
+      HideCache.Remove(zdo.m_uid);
+  }
 
   ///<summary>Hides the item stand if it has an item.</summary>
   public static void HideIfItem(ItemStand obj) {

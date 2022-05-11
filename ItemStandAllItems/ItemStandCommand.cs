@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace ItemStandAllItems;
 public class ItemStandCommand {
-  private static ItemStand GetHovered(Terminal context) {
+  private static ItemStand? GetHovered(Terminal context) {
     if (Player.m_localPlayer == null) return null;
     var hovered = Player.m_localPlayer.m_hovering;
     if (hovered == null || !Attacher.Enabled(hovered.GetComponentInParent<ItemStand>())) {
@@ -17,7 +17,7 @@ public class ItemStandCommand {
     });
     new Terminal.ConsoleCommand("itemstand_offset", "[forward,right,up=0,0,0] - Sets the offset.", (Terminal.ConsoleEventArgs args) => {
       var itemStand = GetHovered(args.Context);
-      if (!itemStand) return;
+      if (itemStand == null) return;
       var value = Vector3.zero;
       if (args.Length > 1) value = Helper.ParseYXZ(args[1]);
       itemStand.m_nview.GetZDO().Set("offset", value);
@@ -28,7 +28,7 @@ public class ItemStandCommand {
     });
     new Terminal.ConsoleCommand("itemstand_rotation", "[roll,pitch,yaw=0,0,0] - Sets the rotation.", (Terminal.ConsoleEventArgs args) => {
       var itemStand = GetHovered(args.Context);
-      if (!itemStand) return;
+      if (itemStand == null) return;
       var value = Vector3.zero;
       if (args.Length > 1) value = Helper.ParseYXZ(args[1]);
       itemStand.m_nview.GetZDO().Set("rotation", value);
@@ -39,14 +39,14 @@ public class ItemStandCommand {
     });
     new Terminal.ConsoleCommand("itemstand_scale", "[x,y,z=1,1,1] - Sets the offset.", (Terminal.ConsoleEventArgs args) => {
       var itemStand = GetHovered(args.Context);
-      if (!itemStand) return;
+      if (itemStand == null) return;
       var value = Vector3.one;
       if (args.Length > 1) value = Helper.ParseScale(args[1]);
       itemStand.m_nview.GetZDO().Set("scale", value);
     });
     new Terminal.ConsoleCommand("itemstand_hide", "[-1/0/1] - Sets whether the item stand automatically hides when it has an item.", (Terminal.ConsoleEventArgs args) => {
       var itemStand = GetHovered(args.Context);
-      if (!itemStand) return;
+      if (itemStand == null) return;
       var value = 0;
       if (args.Length > 1) value = (int)Helper.ParseFloat(args[1]);
       itemStand.m_nview.GetZDO().Set("hide", value);

@@ -12,7 +12,9 @@ public class ItemStandAllItems : BaseUnityPlugin {
     CurrentVersion = "1.7.0",
     MinimumRequiredVersion = "1.7.0"
   };
+#nullable disable
   public static ManualLogSource Log;
+#nullable enable
   public void Awake() {
     Log = Logger;
     Configuration.Init(ConfigSync, Config);
@@ -25,7 +27,7 @@ public class ItemStandAllItems : BaseUnityPlugin {
 }
 
 ///<summary>Adds additional check with the custom attach code.</summary>
-[HarmonyPatch(typeof(ItemStand), "CanAttach")]
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.CanAttach))]
 public class ItemStand_CanAttach {
   static void Postfix(ItemStand __instance, ItemDrop.ItemData item, ref bool __result) {
     if (!Attacher.Enabled(__instance)) return;
@@ -35,16 +37,16 @@ public class ItemStand_CanAttach {
 }
 
 ///<summary>Replaces base game attach point finding with a custom one.</summary>
-[HarmonyPatch(typeof(ItemStand), "GetAttachPrefab")]
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.GetAttachPrefab))]
 public class ItemStand_GetAttachPrefab {
   static void Postfix(ItemStand __instance, GameObject item, ref GameObject __result) {
     if (!Attacher.Enabled(__instance)) return;
-    if (__result == null) __result = Attacher.GetAttach(item);
+    if (__result == null) __result = Attacher.GetAttach(item)!;
   }
 }
 
 ///<summary>Post processed the attached item.</summary>
-[HarmonyPatch(typeof(ItemStand), "SetVisualItem")]
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.SetVisualItem))]
 public class ItemStand_SetVisualItem {
   static void Postfix(ItemStand __instance) {
     Attacher.ReplaceItemDrop(__instance);
@@ -53,8 +55,15 @@ public class ItemStand_SetVisualItem {
   }
 }
 
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.Awake))]
+public class ItemStand_Awake {
+  static void Postfix(ItemStand __instance) {
+    Attacher.RemoveFromHideCache(__instance);
+  }
+}
+
 ///<summary>Instantly shows the item stand when removing the item.</summary>
-[HarmonyPatch(typeof(ItemStand), "DropItem")]
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.DropItem))]
 public class ItemStand_DropItem {
   static void Postfix(ItemStand __instance) {
     Attacher.HideIfItem(__instance);

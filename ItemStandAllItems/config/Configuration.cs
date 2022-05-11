@@ -12,7 +12,7 @@ public class CustomTransformation {
   public Vector3 Scale;
 }
 public static class Configuration {
-
+#nullable disable
   public static ConfigEntry<bool> configLocked;
   public static ConfigEntry<bool> configUseLegacyAttaching;
   public static bool UseLegacyAttaching => configUseLegacyAttaching.Value;
@@ -27,6 +27,7 @@ public static class Configuration {
   public static ConfigEntry<string> configMaximumOffset;
   public static float MaximumOffset => ConfigWrapper.TryParseFloat(configMaximumOffset);
   public static ConfigEntry<string> configCustomTransformations;
+#nullable enable
   private static bool Parse(List<string> args, int index, out float number) {
     var arg = index < args.Count() ? args[index] : "";
     return float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out number);

@@ -60,6 +60,8 @@ The legacy attaching uses the first children. This means the whole is never retu
 
 - v1.7
 	- Adds the missing config lock setting to the config sync.
+	- Fixes item stand hiding not working when reloading the area.
+	- Fixes the command `itemstand_scale` not setting all axis with a single value.
 
 - v1.6
 	- Adds config syncing (if installed server side).

@@ -13,9 +13,9 @@ public class Helper {
   public static Vector3 ParseScale(string value) => SanityCheck(ParseYXZ(value));
   private static Vector3 SanityCheck(Vector3 scale) {
     // Sanity check and also adds support for setting all values with a single number.
-    if (scale.x == 0) scale.x = 1;
-    if (scale.y == 0) scale.y = scale.x;
-    if (scale.z == 0) scale.z = scale.x;
+    if (scale.y == 0) scale.y = 1;
+    if (scale.x == 0) scale.x = scale.y;
+    if (scale.z == 0) scale.z = scale.y;
     return scale;
   }
   public static float ParseFloat(string value, float defaultValue = 0) {

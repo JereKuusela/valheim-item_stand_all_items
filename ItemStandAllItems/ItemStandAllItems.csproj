@@ -3,6 +3,7 @@
     <TargetFramework>net4.8</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <nullable>enable</nullable>
   </PropertyGroup>
   <Target Name="CopyDLL" AfterTargets="Build">
     <Copy
