@@ -10,9 +10,9 @@ namespace ItemStandAllItems;
 public class ItemStandAllItems : BaseUnityPlugin {
   public static bool IsServerDevcommands = false;
   const string GUID = "item_stand_all_items";
-  const string LEGACY_GUID = "valheim.item_stand_all_items";
+  const string LEGACY_GUID = "valheim.jere.item_stand_all_items";
   const string NAME = "Item Stand AllItems";
-  const string VERSION = "1.9";
+  const string VERSION = "1.10";
   ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     LegacyName = LEGACY_GUID,
@@ -24,10 +24,14 @@ public class ItemStandAllItems : BaseUnityPlugin {
   public static ManualLogSource Log;
 #nullable enable
   public void Awake() {
-    var legacyConfig = Path.Combine(Config.ConfigFilePath, $"{LEGACY_GUID}.cfg");
-    var config = Path.Combine(Config.ConfigFilePath, $"{GUID}.cfg");
-    if (File.Exists(legacyConfig))
-      File.Move(legacyConfig, config);
+    var legacyConfig = Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath), $"{LEGACY_GUID}.cfg");
+    var config = Path.Combine(Path.GetDirectoryName(Config.ConfigFilePath), $"{GUID}.cfg");
+    if (File.Exists(legacyConfig)) {
+      if (File.Exists(config))
+        File.Delete(legacyConfig);
+      else
+        File.Move(legacyConfig, config);
+    }
     Log = Logger;
     Configuration.Init(ConfigSync, Config);
     Harmony harmony = new(GUID);

@@ -55,6 +55,9 @@ The legacy attaching uses the first children. This means the whole is never retu
 
 # Changelog
 
+- v1.10
+	- Fixes version 1.9 resetting the config.
+
 - v1.9
 	- Adds a new command `itemstand_info` to print item stand properties.
 	- Changes the mod GUID.
