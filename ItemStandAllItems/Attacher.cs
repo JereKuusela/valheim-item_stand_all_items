@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 namespace ItemStandAllItems;
 public class Attacher {
-  public static bool Enabled(ItemStand obj) => obj && obj.m_name == "$piece_itemstand";
+  public static bool Enabled(ItemStand obj) => obj && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
   ///<summary>Legacy only finds the object with a collider. May not contain all models of the item resulting only in a partial item (like Graydward eye will miss the eye).</summary>
   private static GameObject? GetAttachObjectLegacy(GameObject item) {
     var collider = item.transform.GetComponentInChildren<Collider>();

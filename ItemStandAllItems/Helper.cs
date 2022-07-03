@@ -37,4 +37,6 @@ public class Helper {
       Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft, message);
     }
   }
+
+  public static string Print(float value) => value.ToString("F1", CultureInfo.InvariantCulture);
 }

@@ -4,18 +4,14 @@ Client side mod that allows putting any item on item stands and customizing the 
 
 The config can be synced by also installing on the server.
 
-# Manual Installation
-
-1. Install the [BepInExPack Valheim](https://valheim.thunderstore.io/package/denikson/BepInExPack_Valheim/)
-2. Download the latest zip.
-3. Extract it in the \<GameDirectory\>\BepInEx\plugins\ folder.
-4. Optionally also install the [Configuration manager](url=https://github.com/BepInEx/BepInEx.ConfigurationManager/releases/tag/v16.4).
+Check any modding [guide](https://youtu.be/WfvA5a5tNHo) for installation instructions.
 
 # Configuration
 
 If transformations are enabled, the hovered item stand be configured with commands:
 
 - `itemstand_hide [-1/0/1]`: Sets automatic hiding. 1 to hide, 0 to use the default value and -1 to always show.
+- `itemstand_info`: Prints item, offset, rotation, scale and hide information.
 - `itemstand_offset [forward,right,up=0,0,0]`: Sets the item offset. Limited by maximum offset setting.
 - `itemstand_rotation [roll,pitch,yaw=0,0,0]`: Sets the item rotation.
 - `itemstand_scale [x,y,z=1,1,1]`: Sets the item scale. A single value sets all sides. Limited by maximum scale setting.
@@ -25,6 +21,7 @@ Following settings are available:
 - Custom transformations (key: `custom_transformations`): Allows setting default offset, rotation and scale for each item. See below for more info.
 - Enable transformations (default: `false`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
 - Hide automatically (default: `false`, key: `hide_automatically`): Hides item stands which have items.
+- Item stand ids (default: `itemstand,itemstandh`, key: `item_stands_ids`): Which item stands are affected by this mod.
 - Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.
 - Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
 - Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
@@ -57,6 +54,14 @@ The mod uses a few different ways to attach the items:
 The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
 
 # Changelog
+
+- v1.9
+	- Adds a new command `itemstand_info` to print item stand properties.
+	- Changes the mod GUID.
+
+- v1.8
+	- Adds a new setting `item_stand_ids` to change which item stands are affected by the mod (other mods may add new item stands).
+	- Adds support for removing items from boss stones (if added to the id setting).
 
 - v1.7
 	- Adds the missing config lock setting to the config sync.

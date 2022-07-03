@@ -1,24 +1,36 @@
-﻿using BepInEx;
+﻿using System.Collections.Generic;
+using System.IO;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+
 namespace ItemStandAllItems;
-[BepInPlugin("valheim.jere.item_stand_all_items", "ItemStandAllItems", "1.7.0.0")]
+[BepInPlugin(GUID, NAME, VERSION)]
 public class ItemStandAllItems : BaseUnityPlugin {
   public static bool IsServerDevcommands = false;
-  ServerSync.ConfigSync ConfigSync = new("valheim.jere.item_stand_all_items")
+  const string GUID = "item_stand_all_items";
+  const string LEGACY_GUID = "valheim.item_stand_all_items";
+  const string NAME = "Item Stand AllItems";
+  const string VERSION = "1.9";
+  ServerSync.ConfigSync ConfigSync = new(GUID)
   {
-    DisplayName = "ItemStandAllItems",
-    CurrentVersion = "1.7.0",
+    LegacyName = LEGACY_GUID,
+    DisplayName = NAME,
+    CurrentVersion = VERSION,
     MinimumRequiredVersion = "1.7.0"
   };
 #nullable disable
   public static ManualLogSource Log;
 #nullable enable
   public void Awake() {
+    var legacyConfig = Path.Combine(Config.ConfigFilePath, $"{LEGACY_GUID}.cfg");
+    var config = Path.Combine(Config.ConfigFilePath, $"{GUID}.cfg");
+    if (File.Exists(legacyConfig))
+      File.Move(legacyConfig, config);
     Log = Logger;
     Configuration.Init(ConfigSync, Config);
-    Harmony harmony = new("valheim.jere.item_stand_all_items");
+    Harmony harmony = new(GUID);
     harmony.PatchAll();
   }
   public void Start() {
@@ -62,14 +74,41 @@ public class ItemStand_Awake {
   }
 }
 
-///<summary>Instantly shows the item stand when removing the item.</summary>
+
+///<summary>Allows removing from boss stones.</summary>
+[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.Interact))]
+public class ItemStand_Interact {
+
+  static void Postfix(ItemStand __instance, bool hold, ref bool __result) {
+    if (__result) return;
+    if (hold) return;
+    if (!__instance.HaveAttachment()) return;
+    if (!Attacher.Enabled(__instance)) return;
+    if (!__instance.m_nview.IsOwner())
+      __instance.m_nview.InvokeRPC("RequestOwn", new object[0]);
+    ItemStand_DropItem.Invoking.Add(__instance);
+    __instance.CancelInvoke("DropItem");
+    __instance.InvokeRepeating("DropItem", 0f, 0.1f);
+    __result = true;
+  }
+}
+
+
 [HarmonyPatch(typeof(ItemStand), nameof(ItemStand.DropItem))]
 public class ItemStand_DropItem {
+  public static HashSet<ItemStand> Invoking = new();
+  ///<summary>Allows removing from boss stones.</summary>
+  static bool Prefix(ItemStand __instance) {
+    if (Invoking.Contains(__instance) && !__instance.m_nview.IsOwner()) return false;
+    __instance.CancelInvoke("DropItem");
+    Invoking.Remove(__instance);
+    return true;
+  }
+  ///<summary>Instantly shows the item stand when removing the item.</summary>
   static void Postfix(ItemStand __instance) {
     Attacher.HideIfItem(__instance);
   }
 }
-
 [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
 public class SetCommands {
   static void Postfix() {
