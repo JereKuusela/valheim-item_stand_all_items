@@ -24,6 +24,7 @@ Following settings are available:
 - Item stand ids (default: `itemstand,itemstandh`, key: `item_stands_ids`): Which item stands are affected by this mod.
 - Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.
 - Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
+- Mode (default: `All`, key: `mode`): Sets which items are available. All, Compatible or Vanilla.
 - Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
 - Use legacy attaching (default: `false`, key: `use_legacy_attaching`): Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
 
@@ -54,6 +55,13 @@ The mod uses a few different ways to attach the items:
 The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
 
 # Changelog
+
+- v1.11
+	- Adds a new setting `Mode` to set which items are allowed.
+	- Improves performance.
+	- Fixes `Custom transformations` rotations not being degrees.
+	- Fixes compatibility issue with Better Wards mod.
+	- Fixes the black screen.
 
 - v1.10
 	- Fixes version 1.9 resetting the config.

@@ -7,15 +7,14 @@ using UnityEngine;
 namespace ItemStandAllItems;
 [BepInPlugin(GUID, NAME, VERSION)]
 public class ItemStandAllItems : BaseUnityPlugin {
-  public static bool IsServerDevcommands = false;
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand AllItems";
-  const string VERSION = "1.10";
+  const string VERSION = "1.11";
   ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
     CurrentVersion = VERSION,
-    MinimumRequiredVersion = "1.7.0"
+    MinimumRequiredVersion = "1.11"
   };
 #nullable disable
   public static ManualLogSource Log;
@@ -31,66 +30,54 @@ public class ItemStandAllItems : BaseUnityPlugin {
   }
 }
 
-///<summary>Adds additional check with the custom attach code.</summary>
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.CanAttach))]
-public class ItemStand_CanAttach {
-  static void Postfix(ItemStand __instance, ItemDrop.ItemData item, ref bool __result) {
+[HarmonyPatch(typeof(ItemStand))]
+public class Patches {
+
+  ///<summary>Adds additional check with the custom attach code.</summary>
+  [HarmonyPatch(nameof(ItemStand.CanAttach)), HarmonyPostfix]
+  static void CanAttach(ItemStand __instance, ItemDrop.ItemData item, ref bool __result) {
+    if (Configuration.Mode == "Vanilla") return;
     if (!Attacher.Enabled(__instance)) return;
     if (__result) return;
     __result = Attacher.GetAttach(item.m_dropPrefab) != null;
   }
-}
 
-///<summary>Replaces base game attach point finding with a custom one.</summary>
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.GetAttachPrefab))]
-public class ItemStand_GetAttachPrefab {
-  static void Postfix(ItemStand __instance, GameObject item, ref GameObject __result) {
+  ///<summary>Replaces base game attach point finding with a custom one.</summary>
+  [HarmonyPatch(nameof(ItemStand.GetAttachPrefab)), HarmonyPostfix]
+  static void GetAttachPrefab(ItemStand __instance, GameObject item, ref GameObject __result) {
     if (!Attacher.Enabled(__instance)) return;
     if (__result == null) __result = Attacher.GetAttach(item)!;
   }
-}
 
-///<summary>Post processed the attached item.</summary>
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.SetVisualItem))]
-public class ItemStand_SetVisualItem {
-  static void Postfix(ItemStand __instance) {
-    Attacher.ReplaceItemDrop(__instance);
-    Attacher.UpdateItemTransform(__instance);
-    Attacher.HideIfItem(__instance);
+  ///<summary>Only post process on a change.</summary>
+  [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPrefix]
+  static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state) {
+    __state = __instance.m_visualName == itemName && __instance.m_visualVariant == variant;
   }
-}
-
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.Awake))]
-public class ItemStand_Awake {
-  static void Postfix(ItemStand __instance) {
-    Attacher.RemoveFromHideCache(__instance);
+  ///<summary>Post processed the attached item.</summary>
+  [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPostfix]
+  static void SetVisualItem(ItemStand __instance, bool __state) {
+    if (!__state) Attacher.Refresh(__instance);
   }
-}
 
-
-///<summary>Allows removing from boss stones.</summary>
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.Interact))]
-public class ItemStand_Interact {
-
-  static void Postfix(ItemStand __instance, bool hold, ref bool __result) {
-    if (__result) return;
-    if (hold) return;
+  ///<summary>Allows removing from boss stones.</summary>
+  [HarmonyPatch(nameof(ItemStand.Interact)), HarmonyPostfix]
+  static void Interact(ItemStand __instance, bool hold, bool __runOriginal, ref bool __result) {
+    if (!__runOriginal || __result || hold) return;
     if (!__instance.HaveAttachment()) return;
     if (!Attacher.Enabled(__instance)) return;
     if (!__instance.m_nview.IsOwner())
       __instance.m_nview.InvokeRPC("RequestOwn", new object[0]);
-    ItemStand_DropItem.Invoking.Add(__instance);
+    Invoking.Add(__instance);
     __instance.CancelInvoke("DropItem");
     __instance.InvokeRepeating("DropItem", 0f, 0.1f);
     __result = true;
   }
-}
 
 
-[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.DropItem))]
-public class ItemStand_DropItem {
   public static HashSet<ItemStand> Invoking = new();
   ///<summary>Allows removing from boss stones.</summary>
+  [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPrefix]
   static bool Prefix(ItemStand __instance) {
     if (Invoking.Contains(__instance) && !__instance.m_nview.IsOwner()) return false;
     __instance.CancelInvoke("DropItem");
@@ -98,6 +85,7 @@ public class ItemStand_DropItem {
     return true;
   }
   ///<summary>Instantly shows the item stand when removing the item.</summary>
+  [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPostfix]
   static void Postfix(ItemStand __instance) {
     Attacher.HideIfItem(__instance);
   }

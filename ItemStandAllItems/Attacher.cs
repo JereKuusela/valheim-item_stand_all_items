@@ -37,19 +37,13 @@ public class Attacher {
     // Check it first as it's the safest pick.
     var obj = GetTransform(item, "attach");
     if (obj != null) return obj;
+    if (Configuration.Mode != "All") return null;
     if (Configuration.UseLegacyAttaching) return GetAttachObjectLegacy(item);
     // Child object is preferred as it won't contain ItemDrop script or weird transformation.
     var childModel = GetChildModel(item);
     if (childModel)
       return childModel;
     return item;
-  }
-  private static HashSet<ZDOID> HideCache = new();
-  public static void RemoveFromHideCache(ItemStand obj) {
-    if (!obj.m_nview) return;
-    var zdo = obj.m_nview.GetZDO();
-    if (zdo != null)
-      HideCache.Remove(zdo.m_uid);
   }
 
   ///<summary>Hides the item stand if it has an item.</summary>
@@ -60,10 +54,6 @@ public class Attacher {
     if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
     var item = obj.m_visualItem;
     var show = !obj.HaveAttachment() || hideValue < 1;
-    var previous = !HideCache.Contains(zdo.m_uid);
-    if (show == previous) return;
-    if (show) HideCache.Remove(zdo.m_uid);
-    else HideCache.Add(zdo.m_uid);
     // Layer check to filter the attached item.
     var renderers = obj.GetComponentsInChildren<MeshRenderer>().Where(renderer => item == null || renderer.gameObject.layer == obj.gameObject.layer);
     foreach (var renderer in renderers) {
@@ -95,7 +85,22 @@ public class Attacher {
     }
     foreach (GameObject child in children)
       child.transform.SetParent(dummy.transform, false);
-    ZNetScene.instance.Destroy(item);
+    UnityEngine.Object.Destroy(item);
     obj.m_visualItem = dummy;
+  }
+
+  public static void Refresh(ItemStand obj) {
+    ReplaceItemDrop(obj);
+    UpdateItemTransform(obj);
+    HideIfItem(obj);
+  }
+  public static void Refresh() {
+    foreach (var obj in Object.FindObjectsOfType<ItemStand>()) {
+      // Ensures a full refresh.
+      var name = obj.m_visualName;
+      UnityEngine.Object.Destroy(obj.m_visualItem);
+      obj.m_visualName = "";
+      obj.SetVisualItem(name, obj.m_visualVariant);
+    }
   }
 }

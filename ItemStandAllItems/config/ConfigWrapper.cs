@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using BepInEx.Configuration;
+using ItemStandAllItems;
 using ServerSync;
 
 namespace Service;
@@ -34,6 +35,7 @@ public class ConfigWrapper {
   public ConfigEntry<bool> BindLocking(string group, string name, bool value, string description) => BindLocking(group, name, value, new ConfigDescription(description));
   public ConfigEntry<T> Bind<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true) {
     var configEntry = ConfigFile.Bind(group, name, value, description);
+    configEntry.SettingChanged += (s, e) => Attacher.Refresh();
     Register(configEntry);
     var syncedConfigEntry = ConfigSync.AddConfigEntry(configEntry);
     syncedConfigEntry.SynchronizedConfig = synchronizedSetting;

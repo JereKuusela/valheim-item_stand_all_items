@@ -8,7 +8,7 @@ using UnityEngine;
 namespace ItemStandAllItems;
 public class CustomTransformation {
   public Vector3 Position;
-  public Quaternion Rotation;
+  public Vector3 Rotation;
   public Vector3 Scale;
 }
 public static class Configuration {
@@ -27,6 +27,8 @@ public static class Configuration {
   public static bool MoveCloser => configMoveCloser.Value;
   public static ConfigEntry<bool> configEnableTransformations;
   public static bool EnableTransformations => configEnableTransformations.Value;
+  public static ConfigEntry<string> configMode;
+  public static string Mode => configMode.Value;
   public static ConfigEntry<string> configMaximumScale;
   public static float MaximumScale => ConfigWrapper.TryParseFloat(configMaximumScale);
   public static ConfigEntry<string> configMaximumOffset;
@@ -53,7 +55,7 @@ public static class Configuration {
         position.x = number;
       if (Parse(args, 3, out number))
         position.z = number;
-      var rotation = Quaternion.identity;
+      var rotation = Vector3.zero;
       if (Parse(args, 4, out number))
         rotation.x = number;
       if (Parse(args, 5, out number))
@@ -85,6 +87,7 @@ public static class Configuration {
     configItemStandsIds = wrapper.Bind(section, "Item stands ids", "itemstand,itemstandh", "Item ids that are affected by this mod.");
     configItemStandsIds.SettingChanged += (s, e) => ParseItemStandIds();
     ParseItemStandIds();
+    configMode = wrapper.Bind(section, "Mode", "All", new ConfigDescription("Sets which items are available.", new AcceptableValueList<string>("All", "Compatible", "Vanilla")));
     configHideAutomatically = wrapper.Bind(section, "Hide automatically", false, "If true, hide stands are hidden when they have an item.");
     configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
     configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
@@ -120,7 +123,7 @@ public static class Configuration {
     if (!OriginalRotations.ContainsKey(name)) OriginalRotations.Add(name, item.transform.localRotation);
     var rotation = Quaternion.identity;
     if (transformations.TryGetValue(name, out var transformation))
-      rotation = transformation.Rotation;
+      rotation = Quaternion.Euler(transformation.Rotation);
     var custom = Quaternion.Euler(obj.m_nview.GetZDO().GetVec3("rotation", Vector3.zero));
     var original = OriginalRotations[name];
     item.transform.localRotation = original * rotation * custom;
