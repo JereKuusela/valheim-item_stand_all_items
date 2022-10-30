@@ -25,6 +25,8 @@ public static class Configuration {
   public static bool HideAutomatically => configHideAutomatically.Value;
   public static ConfigEntry<bool> configMoveCloser;
   public static bool MoveCloser => configMoveCloser.Value;
+  public static ConfigEntry<bool> configCanMigrate;
+  public static bool CanMigrate => configCanMigrate.Value;
   public static ConfigEntry<bool> configEnableTransformations;
   public static bool EnableTransformations => configEnableTransformations.Value;
   public static ConfigEntry<string> configMode;
@@ -95,6 +97,7 @@ public static class Configuration {
     configEnableTransformations = wrapper.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
     configMaximumOffset = wrapper.Bind(section, "Maximum offset", "", "Maximum distance for the item offset.");
     configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the item size.");
+    configCanMigrate = wrapper.Bind(section, "Migration command", true, "Whether the migration command is available for clients.");
   }
   private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>
@@ -106,7 +109,7 @@ public static class Configuration {
     var offset = Vector3.zero;
     if (transformations.TryGetValue(name, out var transformation))
       offset = transformation.Position;
-    var custom = obj.m_nview.GetZDO().GetVec3("offset", Vector3.zero);
+    var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashOffset, Vector3.zero);
     var max = Configuration.MaximumOffset;
     if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     var original = OriginalPositions[name];
@@ -124,7 +127,7 @@ public static class Configuration {
     var rotation = Quaternion.identity;
     if (transformations.TryGetValue(name, out var transformation))
       rotation = Quaternion.Euler(transformation.Rotation);
-    var custom = Quaternion.Euler(obj.m_nview.GetZDO().GetVec3("rotation", Vector3.zero));
+    var custom = Quaternion.Euler(obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashRotation, Vector3.zero));
     var original = OriginalRotations[name];
     item.transform.localRotation = original * rotation * custom;
   }
@@ -139,7 +142,7 @@ public static class Configuration {
     if (transformations.TryGetValue(name, out var transformation))
       scale = transformation.Scale;
     var original = OriginalScales[name];
-    var custom = obj.m_nview.GetZDO().GetVec3("scale", Vector3.one);
+    var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashScale, Vector3.one);
     var max = Configuration.MaximumScale;
     if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
     item.transform.localScale = new(original.x * scale.x * custom.x, original.y * scale.y * custom.y, original.z * scale.z * custom.z);

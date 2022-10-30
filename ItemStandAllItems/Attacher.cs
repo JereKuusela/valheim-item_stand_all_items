@@ -50,7 +50,7 @@ public class Attacher {
   public static void HideIfItem(ItemStand obj) {
     if (!Enabled(obj)) return;
     var zdo = obj.m_nview.GetZDO();
-    var hideValue = zdo.GetInt("hide", 0);
+    var hideValue = zdo.GetInt(ItemStandCommand.HashHide, 0);
     if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
     var item = obj.m_visualItem;
     var show = !obj.HaveAttachment() || hideValue < 1;

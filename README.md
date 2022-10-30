@@ -15,6 +15,7 @@ If transformations are enabled, the hovered item stand be configured with comman
 - `itemstand_offset [forward,right,up=0,0,0]`: Sets the item offset. Limited by maximum offset setting.
 - `itemstand_rotation [roll,pitch,yaw=0,0,0]`: Sets the item rotation.
 - `itemstand_scale [x,y,z=1,1,1]`: Sets the item scale. A single value sets all sides. Limited by maximum scale setting.
+- `itemstand_migrate`: Converts item stands from version 1.10 to the version 1.11. On single player, converts all item stands. On multi player, converts nearby item stands.
 
 Following settings are available:
 
@@ -24,6 +25,7 @@ Following settings are available:
 - Item stand ids (default: `itemstand,itemstandh`, key: `item_stands_ids`): Which item stands are affected by this mod.
 - Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.
 - Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
+- Migration command (key: `migration_command`): Whether the migration command is available for clients.
 - Mode (default: `All`, key: `mode`): Sets which items are available. All, Compatible or Vanilla.
 - Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
 - Use legacy attaching (default: `false`, key: `use_legacy_attaching`): Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
@@ -53,3 +55,13 @@ The mod uses a few different ways to attach the items:
 3. If there are multiple children, then the whole item must be used. Unfortunately the parent object contains scripts like ItemDrop which would make the item fall on ground (basically duplicating it). In this case, a dummy object is created to replace the parent object.
 
 The legacy attaching uses the first children. This means the whole is never returned but the attached item may miss some parts of the model.
+
+# Migration from version 1.10
+
+Custom transformation done by commands in version 1.10 no longer work. This was necessary to fix issues with other mods.
+
+`itemstand_migrate` command has been added to convert existing item stands.
+
+- Singleplayer: Converts all item stands and cleans up the old data. This is the recommended way.
+- Multiplayer: Only converts nearby item stands. Old data is not cleaned but can be later cleaned.
+- Server: Same as single player, but requires using `server itemstand_migrate` while having both Item Stand All Items and Server Devcommands mods on the client/server. Requires reloading the area to see changes to nearby item stands.
