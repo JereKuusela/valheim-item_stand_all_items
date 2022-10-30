@@ -16,6 +16,9 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.12
+	- Fixes errors on close.
+
 - v1.11
 	- Breaking change: Old item stand transformations no longer work. Use `itemstand_migrate` command to convert item stands. See the documentation from more information.
 	- Adds a new setting `Mode` to set which items are allowed.

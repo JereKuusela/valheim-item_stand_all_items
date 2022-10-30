@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 namespace ItemStandAllItems;
 public class Attacher {
-  public static bool Enabled(ItemStand obj) => obj && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
+  public static bool Enabled(ItemStand obj) => obj && obj.m_nview && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
   ///<summary>Legacy only finds the object with a collider. May not contain all models of the item resulting only in a partial item (like Graydward eye will miss the eye).</summary>
   private static GameObject? GetAttachObjectLegacy(GameObject item) {
     var collider = item.transform.GetComponentInChildren<Collider>();
@@ -85,7 +85,8 @@ public class Attacher {
     }
     foreach (GameObject child in children)
       child.transform.SetParent(dummy.transform, false);
-    UnityEngine.Object.Destroy(item);
+    // Using ZNetScene shouldn't be necessary but is safer.
+    ZNetScene.instance.Destroy(item);
     obj.m_visualItem = dummy;
   }
 
@@ -95,6 +96,8 @@ public class Attacher {
     HideIfItem(obj);
   }
   public static void Refresh() {
+    // This gets called on close (server sync changes stuff) so make sure the game is actually running.
+    if (!ZNet.instance || ZNet.instance.HaveStopped) return;
     foreach (var obj in Object.FindObjectsOfType<ItemStand>()) {
       // Ensures a full refresh.
       var name = obj.m_visualName;

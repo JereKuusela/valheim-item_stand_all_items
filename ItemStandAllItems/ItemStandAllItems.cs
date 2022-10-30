@@ -8,13 +8,13 @@ namespace ItemStandAllItems;
 [BepInPlugin(GUID, NAME, VERSION)]
 public class ItemStandAllItems : BaseUnityPlugin {
   const string GUID = "item_stand_all_items";
-  const string NAME = "Item Stand AllItems";
-  const string VERSION = "1.11";
+  const string NAME = "Item Stand All Items";
+  const string VERSION = "1.12";
   ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
     CurrentVersion = VERSION,
-    MinimumRequiredVersion = "1.11"
+    MinimumRequiredVersion = VERSION
   };
 #nullable disable
   public static ManualLogSource Log;
@@ -52,12 +52,16 @@ public class Patches {
   ///<summary>Only post process on a change.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPrefix]
   static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state) {
+    // For some objects, the root object is returned which has a ZNetView.
+    // This prevents a new ZDO being created.
+    ZNetView.m_forceDisableInit = true;
     __state = __instance.m_visualName == itemName && __instance.m_visualVariant == variant;
   }
   ///<summary>Post processed the attached item.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPostfix]
   static void SetVisualItem(ItemStand __instance, bool __state) {
     if (!__state) Attacher.Refresh(__instance);
+    ZNetView.m_forceDisableInit = false;
   }
 
   ///<summary>Allows removing from boss stones.</summary>
