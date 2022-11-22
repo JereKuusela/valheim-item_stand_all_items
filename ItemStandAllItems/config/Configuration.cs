@@ -6,17 +6,20 @@ using ServerSync;
 using Service;
 using UnityEngine;
 namespace ItemStandAllItems;
-public class CustomTransformation {
+public class CustomTransformation
+{
   public Vector3 Position;
   public Vector3 Rotation;
   public Vector3 Scale;
 }
-public static class Configuration {
+public static class Configuration
+{
 #nullable disable
   public static ConfigEntry<bool> configLocked;
   private static ConfigEntry<string> configItemStandsIds;
   public static HashSet<string> ItemStandIds = new();
-  private static void ParseItemStandIds() {
+  private static void ParseItemStandIds()
+  {
     ItemStandIds = configItemStandsIds.Value.Split(',').Select(s => s.ToLower()).ToHashSet();
   }
   public static ConfigEntry<bool> configUseLegacyAttaching;
@@ -37,16 +40,19 @@ public static class Configuration {
   public static float MaximumOffset => ConfigWrapper.TryParseFloat(configMaximumOffset);
   public static ConfigEntry<string> configCustomTransformations;
 #nullable enable
-  private static bool Parse(List<string> args, int index, out float number) {
+  private static bool Parse(List<string> args, int index, out float number)
+  {
     var arg = index < args.Count() ? args[index] : "";
     return float.TryParse(arg, NumberStyles.Float, CultureInfo.InvariantCulture, out number);
   }
 
   ///<summary>Parses custom transformations from the config.</summary>
-  public static Dictionary<string, CustomTransformation> CustomTransformations() {
+  public static Dictionary<string, CustomTransformation> CustomTransformations()
+  {
     var split = configCustomTransformations.Value.Split('|');
     Dictionary<string, CustomTransformation> dict = new();
-    foreach (var item in split) {
+    foreach (var item in split)
+    {
       var args = item.Split(',').Select(value => value.Trim()).ToList();
       if (args.Count() < 1) continue;
       if (args[0] == "") continue;
@@ -82,7 +88,8 @@ public static class Configuration {
     }
     return dict;
   }
-  public static void Init(ConfigSync configSync, ConfigFile configFile) {
+  public static void Init(ConfigSync configSync, ConfigFile configFile)
+  {
     ConfigWrapper wrapper = new("itemstand_config", configFile, configSync);
     var section = "General";
     configLocked = wrapper.BindLocking(section, "Config locked", false, "When true, server sets the config values.");
@@ -94,14 +101,15 @@ public static class Configuration {
     configUseLegacyAttaching = wrapper.Bind(section, "Use legacy attaching", false, "Use the previous attach way on version 1.1.0 (works for less items).");
     configMoveCloser = wrapper.Bind(section, "Move items closer", false, "If true, attached items will be closer to the item stand.");
     configCustomTransformations = wrapper.Bind(section, "Custom transformations", "WolfFang,0,-0.254", "Apply custom position and rotation to attached items with format: id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...");
-    configEnableTransformations = wrapper.Bind(section, "Enable transformations", false, "If true, custom transformations are applied (may slightly affect performance).");
+    configEnableTransformations = wrapper.Bind(section, "Enable transformations", true, "If true, custom transformations are applied (may slightly affect performance).");
     configMaximumOffset = wrapper.Bind(section, "Maximum offset", "", "Maximum distance for the item offset.");
     configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the item size.");
     configCanMigrate = wrapper.Bind(section, "Migration command", true, "Whether the migration command is available for clients.");
   }
   private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>
-  public static void Offset(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+  public static void Offset(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;
@@ -119,7 +127,8 @@ public static class Configuration {
   }
   private static Dictionary<string, Quaternion> OriginalRotations = new();
   ///<summary>Rotates the attached item according to the config.</summary>
-  public static void Rotate(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+  public static void Rotate(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;
@@ -133,7 +142,8 @@ public static class Configuration {
   }
   private static Dictionary<string, Vector3> OriginalScales = new();
   ///<summary>Scales the attached item according to the config.</summary>
-  public static void Scale(Dictionary<string, CustomTransformation> transformations, ItemStand obj) {
+  public static void Scale(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;

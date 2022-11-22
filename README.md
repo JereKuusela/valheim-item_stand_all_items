@@ -20,7 +20,7 @@ If transformations are enabled, the hovered item stand be configured with comman
 Following settings are available:
 
 - Custom transformations (key: `custom_transformations`): Allows setting default offset, rotation and scale for each item. See below for more info.
-- Enable transformations (default: `false`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
+- Enable transformations (default: `true`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
 - Hide automatically (default: `false`, key: `hide_automatically`): Hides item stands which have items.
 - Item stand ids (default: `itemstand,itemstandh`, key: `item_stands_ids`): Which item stands are affected by this mod.
 - Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.

@@ -16,6 +16,9 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.13
+	- Update for Mistlands PTB.
+
 - v1.12
 	- Fixes errors on close.
 

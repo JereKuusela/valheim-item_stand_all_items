@@ -6,10 +6,11 @@ using UnityEngine;
 
 namespace ItemStandAllItems;
 [BepInPlugin(GUID, NAME, VERSION)]
-public class ItemStandAllItems : BaseUnityPlugin {
+public class ItemStandAllItems : BaseUnityPlugin
+{
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.12";
+  const string VERSION = "1.13";
   ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
@@ -19,23 +20,27 @@ public class ItemStandAllItems : BaseUnityPlugin {
 #nullable disable
   public static ManualLogSource Log;
 #nullable enable
-  public void Awake() {
+  public void Awake()
+  {
     Log = Logger;
     Configuration.Init(ConfigSync, Config);
     Harmony harmony = new(GUID);
     harmony.PatchAll();
   }
-  public void Start() {
+  public void Start()
+  {
     CommandWrapper.Init();
   }
 }
 
 [HarmonyPatch(typeof(ItemStand))]
-public class Patches {
+public class Patches
+{
 
   ///<summary>Adds additional check with the custom attach code.</summary>
   [HarmonyPatch(nameof(ItemStand.CanAttach)), HarmonyPostfix]
-  static void CanAttach(ItemStand __instance, ItemDrop.ItemData item, ref bool __result) {
+  static void CanAttach(ItemStand __instance, ItemDrop.ItemData item, ref bool __result)
+  {
     if (Configuration.Mode == "Vanilla") return;
     if (!Attacher.Enabled(__instance)) return;
     if (__result) return;
@@ -44,14 +49,16 @@ public class Patches {
 
   ///<summary>Replaces base game attach point finding with a custom one.</summary>
   [HarmonyPatch(nameof(ItemStand.GetAttachPrefab)), HarmonyPostfix]
-  static void GetAttachPrefab(ItemStand __instance, GameObject item, ref GameObject __result) {
+  static void GetAttachPrefab(ItemStand __instance, GameObject item, ref GameObject __result)
+  {
     if (!Attacher.Enabled(__instance)) return;
     if (__result == null) __result = Attacher.GetAttach(item)!;
   }
 
   ///<summary>Only post process on a change.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPrefix]
-  static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state) {
+  static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state)
+  {
     // For some objects, the root object is returned which has a ZNetView.
     // This prevents a new ZDO being created.
     ZNetView.m_forceDisableInit = true;
@@ -59,14 +66,16 @@ public class Patches {
   }
   ///<summary>Post processed the attached item.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPostfix]
-  static void SetVisualItem(ItemStand __instance, bool __state) {
+  static void SetVisualItem(ItemStand __instance, bool __state)
+  {
     if (!__state) Attacher.Refresh(__instance);
     ZNetView.m_forceDisableInit = false;
   }
 
   ///<summary>Allows removing from boss stones.</summary>
   [HarmonyPatch(nameof(ItemStand.Interact)), HarmonyPostfix]
-  static void Interact(ItemStand __instance, bool hold, bool __runOriginal, ref bool __result) {
+  static void Interact(ItemStand __instance, bool hold, bool __runOriginal, ref bool __result)
+  {
     if (!__runOriginal || __result || hold) return;
     if (!__instance.HaveAttachment()) return;
     if (!Attacher.Enabled(__instance)) return;
@@ -82,7 +91,8 @@ public class Patches {
   public static HashSet<ItemStand> Invoking = new();
   ///<summary>Allows removing from boss stones.</summary>
   [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPrefix]
-  static bool Prefix(ItemStand __instance) {
+  static bool Prefix(ItemStand __instance)
+  {
     if (Invoking.Contains(__instance) && !__instance.m_nview.IsOwner()) return false;
     __instance.CancelInvoke("DropItem");
     Invoking.Remove(__instance);
@@ -90,13 +100,16 @@ public class Patches {
   }
   ///<summary>Instantly shows the item stand when removing the item.</summary>
   [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPostfix]
-  static void Postfix(ItemStand __instance) {
+  static void Postfix(ItemStand __instance)
+  {
     Attacher.HideIfItem(__instance);
   }
 }
 [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
-public class SetCommands {
-  static void Postfix() {
+public class SetCommands
+{
+  static void Postfix()
+  {
     new ItemStandCommand();
   }
 }
