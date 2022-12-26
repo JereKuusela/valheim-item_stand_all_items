@@ -16,6 +16,9 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.14
+	- Fixes lantern not working.
+
 - v1.13
 	- Update for Mistlands PTB.
 

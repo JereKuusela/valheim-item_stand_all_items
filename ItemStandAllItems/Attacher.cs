@@ -56,7 +56,6 @@ public class Attacher
   ///<summary>Hides the item stand if it has an item.</summary>
   public static void HideIfItem(ItemStand obj)
   {
-    if (!Enabled(obj)) return;
     var zdo = obj.m_nview.GetZDO();
     var hideValue = zdo.GetInt(ItemStandCommand.HashHide, 0);
     if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
@@ -70,10 +69,20 @@ public class Attacher
         renderer.enabled = show;
     }
   }
+  public static void Enable(ItemStand obj) {
+    if (obj.m_visualItem == null) return;
+    obj.m_visualItem.SetActive(true);
+    // Probably safest to hardcode this for now. Maybe something more generic if more cases appear.
+    var equipped = obj.m_visualItem.transform.Find("equiped");
+    if (equipped) {
+      obj.m_visualItem.transform.localPosition = Vector3.zero;
+      equipped.gameObject.SetActive(true);
+      equipped.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+    }  
+  }
   ///<summary>Updates local transformation according to settings.</summary>
   public static void UpdateItemTransform(ItemStand obj)
   {
-    if (!Attacher.Enabled(obj)) return;
     if (obj.m_visualItem == null) return;
     var transformations = Configuration.CustomTransformations();
     Configuration.Offset(transformations, obj);
@@ -83,7 +92,6 @@ public class Attacher
   ///<summary>Replaces ItemDrop script with an empty dummy object.</summary>
   public static void ReplaceItemDrop(ItemStand obj)
   {
-    if (!Attacher.Enabled(obj)) return;
     var item = obj.m_visualItem;
     if (item == null || item.GetComponent<ItemDrop>() == null) return;
     var attach = item.transform.parent;
@@ -104,7 +112,9 @@ public class Attacher
 
   public static void Refresh(ItemStand obj)
   {
+    if (!Enabled(obj)) return;
     ReplaceItemDrop(obj);
+    Enable(obj);
     UpdateItemTransform(obj);
     HideIfItem(obj);
   }

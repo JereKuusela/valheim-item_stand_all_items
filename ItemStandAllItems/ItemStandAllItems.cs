@@ -10,7 +10,7 @@ public class ItemStandAllItems : BaseUnityPlugin
 {
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.13";
+  const string VERSION = "1.14";
   ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
@@ -24,8 +24,7 @@ public class ItemStandAllItems : BaseUnityPlugin
   {
     Log = Logger;
     Configuration.Init(ConfigSync, Config);
-    Harmony harmony = new(GUID);
-    harmony.PatchAll();
+    new Harmony(GUID).PatchAll();
   }
   public void Start()
   {
@@ -102,6 +101,7 @@ public class Patches
   [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPostfix]
   static void Postfix(ItemStand __instance)
   {
+    if (!Attacher.Enabled(__instance)) return;
     Attacher.HideIfItem(__instance);
   }
 }

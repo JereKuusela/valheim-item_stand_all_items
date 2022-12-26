@@ -77,8 +77,8 @@ public class ConfigWrapper
   private static void Toggle(Terminal context, ConfigEntry<bool> setting, string name, string value)
   {
     if (value == "") setting.Value = !setting.Value;
-    else if (value == "1") setting.Value = true;
-    else if (value == "0") setting.Value = false;
+    else if (value == "1" || value == "true") setting.Value = true;
+    else if (value == "0" || value == "false") setting.Value = false;
     AddMessage(context, $"{name} {State(setting.Value)}.");
   }
   public static int TryParseInt(string value, int defaultValue)
