@@ -70,14 +70,15 @@ public class Attacher
     }
   }
   public static void Enable(ItemStand obj) {
-    if (obj.m_visualItem == null) return;
+    if (!obj.m_visualItem) return;
     obj.m_visualItem.SetActive(true);
     // Probably safest to hardcode this for now. Maybe something more generic if more cases appear.
     var equipped = obj.m_visualItem.transform.Find("equiped");
     if (equipped) {
       obj.m_visualItem.transform.localPosition = Vector3.zero;
       equipped.gameObject.SetActive(true);
-      equipped.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+      if (equipped.gameObject.TryGetComponent<Rigidbody>(out var body))
+        body.isKinematic = true;
     }  
   }
   ///<summary>Updates local transformation according to settings.</summary>

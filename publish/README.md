@@ -16,6 +16,9 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.15
+	- Fixes error with some items.
+
 - v1.14
 	- Fixes lantern not working.
 
