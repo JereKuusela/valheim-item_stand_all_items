@@ -16,6 +16,9 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.16
+	- Fixes slightly wrong positions on some equippable items.
+
 - v1.15
 	- Fixes error with some items.
 
@@ -35,20 +38,3 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 	- Fixes `Custom transformations` rotations not being degrees.
 	- Fixes compatibility issue with Better Wards mod.
 	- Fixes the black screen.
-
-- v1.10
-	- Fixes version 1.9 resetting the config.
-
-- v1.9
-	- Adds a new command `itemstand_info` to print item stand properties.
-	- Changes the mod GUID.
-
-- v1.8
-	- Adds a new setting `item_stand_ids` to change which item stands are affected by the mod (other mods may add new item stands).
-	- Adds support for removing items from boss stones (if added to the id setting).
-
-- v1.7
-	- Adds the missing config lock setting to the config sync.
-	- Fixes item stand hiding not working when reloading the area.
-	- Fixes the command `itemstand_scale` not setting all axis with a single value.
-	- Fixes acorns not appearing on item stands.

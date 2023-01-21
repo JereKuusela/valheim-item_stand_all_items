@@ -69,17 +69,22 @@ public class Attacher
         renderer.enabled = show;
     }
   }
-  public static void Enable(ItemStand obj) {
+  ///<summary>Enables disabled attach transformations.</summary>
+  public static void Enable(ItemStand obj)
+  {
     if (!obj.m_visualItem) return;
-    obj.m_visualItem.SetActive(true);
+    if (obj.m_visualItem.activeSelf) return;
     // Probably safest to hardcode this for now. Maybe something more generic if more cases appear.
     var equipped = obj.m_visualItem.transform.Find("equiped");
-    if (equipped) {
+    if (equipped)
+    {
+      // This will get saved to the OriginalPositions so must be done regardless of settings.
       obj.m_visualItem.transform.localPosition = Vector3.zero;
       equipped.gameObject.SetActive(true);
       if (equipped.gameObject.TryGetComponent<Rigidbody>(out var body))
         body.isKinematic = true;
-    }  
+    }
+    obj.m_visualItem.SetActive(Configuration.Mode == "All");
   }
   ///<summary>Updates local transformation according to settings.</summary>
   public static void UpdateItemTransform(ItemStand obj)
