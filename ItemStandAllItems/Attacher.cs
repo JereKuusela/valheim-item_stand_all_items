@@ -124,17 +124,19 @@ public class Attacher
     UpdateItemTransform(obj);
     HideIfItem(obj);
   }
-  public static void Refresh()
+  public static void ReloadAll()
   {
     // This gets called on close (server sync changes stuff) so make sure the game is actually running.
     if (!ZNet.instance || ZNet.instance.HaveStopped) return;
     foreach (var obj in Object.FindObjectsOfType<ItemStand>())
-    {
-      // Ensures a full refresh.
-      var name = obj.m_visualName;
-      UnityEngine.Object.Destroy(obj.m_visualItem);
-      obj.m_visualName = "";
-      obj.SetVisualItem(name, obj.m_visualVariant, 1);
-    }
+      Reload(obj);
+  }
+
+  public static void Reload(ItemStand obj)
+  {
+    // Ensures a full refresh.
+    UnityEngine.Object.Destroy(obj.m_visualItem);
+    obj.m_visualName = "";
+    obj.UpdateVisual();
   }
 }

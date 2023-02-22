@@ -40,7 +40,7 @@ public class ConfigWrapper
   public ConfigEntry<T> Bind<T>(string group, string name, T value, ConfigDescription description, bool synchronizedSetting = true)
   {
     var configEntry = ConfigFile.Bind(group, name, value, description);
-    configEntry.SettingChanged += (s, e) => Attacher.Refresh();
+    configEntry.SettingChanged += (s, e) => Attacher.ReloadAll();
     Register(configEntry);
     var syncedConfigEntry = ConfigSync.AddConfigEntry(configEntry);
     syncedConfigEntry.SynchronizedConfig = synchronizedSetting;

@@ -16,6 +16,10 @@ Donations: [Buy me a computer](https://www.buymeacoffee.com/jerekuusela)
 
 # Changelog
 
+- v1.17
+	- Improves performance.
+	- Fixes higher level fish not being scaled.
+
 - v1.16
 	- Fixes slightly wrong positions on some equippable items.
 

@@ -38,7 +38,7 @@ public class ItemStandCommand
       var value = Vector3.zero;
       if (args.Length > 1) value = Helper.ParseYXZ(args[1]);
       zdo.Set(HashOffset, value);
-      Attacher.Refresh(obj);
+      Attacher.Reload(obj);
     });
     CommandWrapper.Register("itemstand_rotation", (int index, int subIndex) =>
     {
@@ -53,7 +53,7 @@ public class ItemStandCommand
       var value = Vector3.zero;
       if (args.Length > 1) value = Helper.ParseYXZ(args[1]);
       zdo.Set(HashRotation, value);
-      Attacher.Refresh(obj);
+      Attacher.Reload(obj);
     });
     CommandWrapper.Register("itemstand_scale", (int index, int subIndex) =>
     {
@@ -68,7 +68,7 @@ public class ItemStandCommand
       var value = Vector3.one;
       if (args.Length > 1) value = Helper.ParseScale(args[1]);
       zdo.Set(HashScale, value);
-      Attacher.Refresh(obj);
+      Attacher.Reload(obj);
     });
     new Terminal.ConsoleCommand("itemstand_hide", "[-1/0/1] - Sets whether the item stand automatically hides when it has an item.", (args) =>
     {
@@ -78,7 +78,7 @@ public class ItemStandCommand
       var value = 0;
       if (args.Length > 1) value = (int)Helper.ParseFloat(args[1]);
       zdo.Set(HashHide, value);
-      Attacher.Refresh(obj);
+      Attacher.Reload(obj);
     });
     new Terminal.ConsoleCommand("itemstand_info", "- Prints the item stand properties.", (args) =>
     {
@@ -166,7 +166,7 @@ public class ItemStandCommand
           zdo.IncreseDataRevision();
         }
       }
-      Attacher.Refresh();
+      Attacher.ReloadAll();
       Helper.AddMessage(args.Context, $"Updated {updated} item stands.");
     });
   }

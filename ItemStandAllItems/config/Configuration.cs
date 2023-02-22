@@ -106,55 +106,54 @@ public static class Configuration
     configMaximumScale = wrapper.Bind(section, "Maximum scale", "", "Maximum multiplier for the item size.");
     configCanMigrate = wrapper.Bind(section, "Migration command", true, "Whether the migration command is available for clients.");
   }
-  private static Dictionary<string, Vector3> OriginalPositions = new();
   ///<summary>Offsets the attached item according to the config.</summary>
   public static void Offset(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;
-    if (!OriginalPositions.ContainsKey(name)) OriginalPositions.Add(name, item.transform.localPosition);
-    var offset = Vector3.zero;
     if (transformations.TryGetValue(name, out var transformation))
-      offset = transformation.Position;
+      item.transform.localPosition += transformation.Position;
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashOffset, Vector3.zero);
-    var max = Configuration.MaximumOffset;
-    if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
-    var original = OriginalPositions[name];
-    // Rotation causes y-coordinate to determine the distance.
-    Vector3 parent = new(item.transform.parent.localPosition.y, item.transform.parent.localPosition.z, item.transform.parent.localPosition.x);
-    item.transform.localPosition = original + offset + custom - (MoveCloser ? parent : Vector3.zero);
+    if (custom != Vector3.zero)
+    {
+      var max = Configuration.MaximumOffset;
+      if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
+      item.transform.localPosition += custom;
+    }
+    if (MoveCloser)
+    {
+      // Rotation causes y-coordinate to determine the distance.
+      Vector3 parent = new(item.transform.parent.localPosition.y, item.transform.parent.localPosition.z, item.transform.parent.localPosition.x);
+      item.transform.localPosition -= parent;
+    }
   }
-  private static Dictionary<string, Quaternion> OriginalRotations = new();
   ///<summary>Rotates the attached item according to the config.</summary>
   public static void Rotate(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;
-    if (!OriginalRotations.ContainsKey(name)) OriginalRotations.Add(name, item.transform.localRotation);
-    var rotation = Quaternion.identity;
     if (transformations.TryGetValue(name, out var transformation))
-      rotation = Quaternion.Euler(transformation.Rotation);
-    var custom = Quaternion.Euler(obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashRotation, Vector3.zero));
-    var original = OriginalRotations[name];
-    item.transform.localRotation = original * rotation * custom;
+      item.transform.localRotation *= Quaternion.Euler(transformation.Rotation);
+    var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashRotation, Vector3.zero);
+    if (custom != Vector3.zero)
+      item.transform.localRotation *= Quaternion.Euler(custom);
   }
-  private static Dictionary<string, Vector3> OriginalScales = new();
   ///<summary>Scales the attached item according to the config.</summary>
   public static void Scale(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
     var name = obj.m_visualName.ToLower();
     var item = obj.m_visualItem;
-    if (!OriginalScales.ContainsKey(name)) OriginalScales.Add(name, item.transform.localScale);
-    var scale = Vector3.one;
     if (transformations.TryGetValue(name, out var transformation))
-      scale = transformation.Scale;
-    var original = OriginalScales[name];
+      item.transform.localScale = Vector3.Scale(item.transform.localScale, transformation.Scale);
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashScale, Vector3.one);
-    var max = Configuration.MaximumScale;
-    if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
-    item.transform.localScale = new(original.x * scale.x * custom.x, original.y * scale.y * custom.y, original.z * scale.z * custom.z);
+    if (custom != Vector3.one)
+    {
+      var max = Configuration.MaximumScale;
+      if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
+      item.transform.localScale = Vector3.Scale(item.transform.localScale, custom);
+    }
   }
 }
