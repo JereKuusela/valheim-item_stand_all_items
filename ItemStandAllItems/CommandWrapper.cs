@@ -20,7 +20,7 @@ public static class CommandWrapper
       }
     }
   }
-  private static BindingFlags PublicBinding = BindingFlags.Static | BindingFlags.Public;
+  private static readonly BindingFlags PublicBinding = BindingFlags.Static | BindingFlags.Public;
   private static Type Type() => ServerDevcommands!.GetType("ServerDevcommands.AutoComplete");
   private static Type InfoType() => ServerDevcommands!.GetType("ServerDevcommands.ParameterInfo");
   private static MethodInfo GetMethod(Type type, string name, Type[] types) => type.GetMethod(name, PublicBinding, null, CallingConventions.Standard, types, null);
