@@ -10,12 +10,12 @@ public class ItemStandAllItems : BaseUnityPlugin
 {
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.18";
+  const string VERSION = "1.19";
   readonly ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
     CurrentVersion = VERSION,
-    MinimumRequiredVersion = "1.18"
+    MinimumRequiredVersion = VERSION
   };
 #nullable disable
   public static ManualLogSource Log;
