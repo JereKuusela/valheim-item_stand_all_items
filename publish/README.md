@@ -6,7 +6,7 @@ Install on the client (modding [guide](https://youtu.be/L9ljm2eKLrk)).
 
 Install on the server to sync the config.
 
-# Usage
+## Usage
 
 See [documentation](https://github.com/JereKuusela/valheim-item_stand_all_items/blob/main/README.md).
 

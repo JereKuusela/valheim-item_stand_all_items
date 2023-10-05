@@ -1,3 +1,6 @@
+- v1.20
+  - Fixed for the new update.
+
 - v1.19
   - Fixed for the new update.
 
@@ -11,6 +14,3 @@
 
 - v1.16
   - Fixes slightly wrong positions on some equippable items.
-
-- v1.15
-  - Fixes error with some items.

@@ -6,7 +6,7 @@ Install on the client (modding [guide](https://youtu.be/L9ljm2eKLrk)).
 
 Install on the server to sync the config.
 
-# Configuration
+## Configuration
 
 If transformations are enabled, the hovered item stand be configured with commands:
 
@@ -29,7 +29,7 @@ Following settings are available:
 - Move items closer (default: `false`, key: `move_items_closer`): Removes the base offset to make items attach closer to the wall.
 - Use legacy attaching (default: `false`, key: `use_legacy_attaching`): Reverts to the version 1.1.0 attaching method. If the mod causes any issues this can be tried. It works very reliably but some items will be disabled or may not contain all parts of the model.
 
-## Custom transformations
+### Custom transformations
 
 The format is id,distance,offset_x,offset_y,angle_1,angle_2,angle_3,scale_1,scale_2,scale_3|id,distance,...
 
@@ -45,7 +45,7 @@ For example:
 - Wood,0,0,0,0,0,20 would rotate attached wood items slightly.
 - Wood,-0.1|CarrotSoup,-0.1 would move carrot soup and wood items slightly towards the item stand.
 
-# How it works
+## How it works
 
 The mod uses a few different ways to attach the items:
 
