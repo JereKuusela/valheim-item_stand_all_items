@@ -52,7 +52,7 @@ public class ConfigWrapper
     context.AddString(message);
     Player.m_localPlayer?.Message(MessageHud.MessageType.TopLeft, message);
   }
-  private readonly Dictionary<string, Action<Terminal, string>> SettingHandlers = new();
+  private readonly Dictionary<string, Action<Terminal, string>> SettingHandlers = [];
   private void Register(ConfigEntry<bool> setting)
   {
     var name = setting.Definition.Key;

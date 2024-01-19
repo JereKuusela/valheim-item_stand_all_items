@@ -17,7 +17,7 @@ public static class Configuration
 #nullable disable
   public static ConfigEntry<bool> configLocked;
   private static ConfigEntry<string> configItemStandsIds;
-  public static HashSet<string> ItemStandIds = new();
+  public static HashSet<string> ItemStandIds = [];
   private static void ParseItemStandIds()
   {
     ItemStandIds = configItemStandsIds.Value.Split(',').Select(s => s.ToLower()).ToHashSet();
@@ -50,7 +50,7 @@ public static class Configuration
   public static Dictionary<string, CustomTransformation> CustomTransformations()
   {
     var split = configCustomTransformations.Value.Split('|');
-    Dictionary<string, CustomTransformation> dict = new();
+    Dictionary<string, CustomTransformation> dict = [];
     foreach (var item in split)
     {
       var args = item.Split(',').Select(value => value.Trim()).ToList();

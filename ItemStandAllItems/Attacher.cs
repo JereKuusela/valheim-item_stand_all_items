@@ -103,7 +103,7 @@ public class Attacher
     var attach = item.transform.parent;
     var dummy = Object.Instantiate<GameObject>(new(), attach.position, attach.rotation, attach);
     dummy.layer = item.layer;
-    List<GameObject> children = new();
+    List<GameObject> children = [];
     foreach (Transform child in item.transform)
     {
       if (child.gameObject.layer != dummy.layer) continue;

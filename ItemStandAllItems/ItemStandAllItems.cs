@@ -79,7 +79,7 @@ public class Patches
     if (!__instance.HaveAttachment()) return;
     if (!Attacher.Enabled(__instance)) return;
     if (!__instance.m_nview.IsOwner())
-      __instance.m_nview.InvokeRPC("RequestOwn", new object[0]);
+      __instance.m_nview.InvokeRPC("RequestOwn", []);
     Invoking.Add(__instance);
     __instance.CancelInvoke("DropItem");
     __instance.InvokeRepeating("DropItem", 0f, 0.1f);
@@ -87,7 +87,7 @@ public class Patches
   }
 
 
-  public static HashSet<ItemStand> Invoking = new();
+  public static HashSet<ItemStand> Invoking = [];
   ///<summary>Allows removing from boss stones.</summary>
   [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPrefix]
   static bool Prefix(ItemStand __instance)

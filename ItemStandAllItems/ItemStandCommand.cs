@@ -1,16 +1,11 @@
-using System.Linq;
 using UnityEngine;
 namespace ItemStandAllItems;
 public class ItemStandCommand
 {
   public static int HashHide = "itemstand_hide".GetStableHashCode();
-  public static int HashHideLegacy = "hide".GetStableHashCode();
   public static int HashOffset = "itemstand_offset".GetStableHashCode();
-  public static int HashOffsetLegacy = "offset".GetStableHashCode();
   public static int HashRotation = "itemstand_rotation".GetStableHashCode();
-  public static int HashRotationLegacy = "rotation".GetStableHashCode();
   public static int HashScale = "itemstand_scale".GetStableHashCode();
-  public static int HashScaleLegacy = "scale".GetStableHashCode();
   private static ItemStand? GetHovered(Terminal context)
   {
     if (Player.m_localPlayer == null) return null;

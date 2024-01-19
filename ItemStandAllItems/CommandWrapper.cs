@@ -27,34 +27,34 @@ public static class CommandWrapper
   public static void Register(string command, Func<int, int, List<string>?> action)
   {
     if (ServerDevcommands == null) return;
-    GetMethod(Type(), "Register", new[] { typeof(string), typeof(Func<int, int, List<string>>) }).Invoke(null, new object[] { command, action });
+    GetMethod(Type(), "Register", [typeof(string), typeof(Func<int, int, List<string>>)]).Invoke(null, [command, action]);
   }
   public static void Register(string command, Func<int, List<string>> action)
   {
     if (ServerDevcommands == null) return;
-    GetMethod(Type(), "Register", new[] { typeof(string), typeof(Func<int, List<string>>) }).Invoke(null, new object[] { command, action });
+    GetMethod(Type(), "Register", [typeof(string), typeof(Func<int, List<string>>)]).Invoke(null, [command, action]);
   }
 #nullable disable
   public static List<string> Scale(string description, int index)
   {
     if (ServerDevcommands == null) return null;
-    return GetMethod(InfoType(), "Scale", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
+    return GetMethod(InfoType(), "Scale", [typeof(string), typeof(int)]).Invoke(null, [description, index]) as List<string>;
   }
   public static List<string> FRU(string description, int index)
   {
     if (ServerDevcommands == null) return null;
-    return GetMethod(InfoType(), "FRU", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
+    return GetMethod(InfoType(), "FRU", [typeof(string), typeof(int)]).Invoke(null, [description, index]) as List<string>;
   }
 
   public static List<string> Info(string value)
   {
     if (ServerDevcommands == null) return null;
-    return GetMethod(InfoType(), "Create", new[] { typeof(string) }).Invoke(null, new[] { value }) as List<string>;
+    return GetMethod(InfoType(), "Create", [typeof(string)]).Invoke(null, new[] { value }) as List<string>;
   }
   public static List<string> RollPitchYaw(string description, int index)
   {
     if (ServerDevcommands == null) return null;
-    return GetMethod(InfoType(), "RollPitchYaw", new[] { typeof(string), typeof(int) }).Invoke(null, new object[] { description, index }) as List<string>;
+    return GetMethod(InfoType(), "RollPitchYaw", [typeof(string), typeof(int)]).Invoke(null, [description, index]) as List<string>;
   }
 #nullable enable
 }
