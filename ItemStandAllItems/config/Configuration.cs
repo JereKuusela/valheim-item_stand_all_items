@@ -117,7 +117,7 @@ public static class Configuration
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashOffset, Vector3.zero);
     if (custom != Vector3.zero)
     {
-      var max = Configuration.MaximumOffset;
+      var max = MaximumOffset;
       if (max > 0f && custom.sqrMagnitude > max * max) custom *= max / custom.magnitude;
       item.transform.localPosition += custom;
     }

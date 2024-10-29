@@ -10,7 +10,7 @@ public class ItemStandAllItems : BaseUnityPlugin
 {
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.20";
+  const string VERSION = "1.21";
   readonly ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
@@ -48,16 +48,19 @@ public class Patches
 
   ///<summary>Replaces base game attach point finding with a custom one.</summary>
   [HarmonyPatch(nameof(ItemStand.GetAttachPrefab)), HarmonyPostfix]
-  static void GetAttachPrefab(ItemStand __instance, GameObject item, ref GameObject __result)
+  static GameObject GetAttachPrefab(GameObject result, GameObject item)
   {
-    if (!Attacher.Enabled(__instance)) return;
-    if (__result == null) __result = Attacher.GetAttach(item)!;
+    if (!Attacher.Enabled(LastStand)) return result;
+    if (result) return result;
+    return Attacher.GetAttach(item)!;
   }
-
+  // GetAttachPrefab is now static, so the instance is stored here.
+  static ItemStand? LastStand;
   ///<summary>Only post process on a change.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPrefix]
   static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state)
   {
+    LastStand = __instance;
     // For some objects, the root object is returned which has a ZNetView.
     // This prevents a new ZDO being created.
     ZNetView.m_forceDisableInit = true;
@@ -67,6 +70,7 @@ public class Patches
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPostfix]
   static void SetVisualItem(ItemStand __instance, bool __state)
   {
+    LastStand = null;
     if (!__state) Attacher.Refresh(__instance);
     ZNetView.m_forceDisableInit = false;
   }

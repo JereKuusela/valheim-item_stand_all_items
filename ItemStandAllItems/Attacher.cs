@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ItemStandAllItems;
 public class Attacher
 {
-  public static bool Enabled(ItemStand obj) => obj && obj.m_nview && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
+  public static bool Enabled(ItemStand? obj) => obj != null && obj.m_nview && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
   ///<summary>Legacy only finds the object with a collider. May not contain all models of the item resulting only in a partial item (like Graydward eye will miss the eye).</summary>
   private static GameObject? GetAttachObjectLegacy(GameObject item)
   {
@@ -43,7 +43,7 @@ public class Attacher
     // Base game also uses "attach" transform but explicitly disabled for some items.
     // Check it first as it's the safest pick.
     var obj = GetTransform(item, "attach");
-    if (obj != null) return obj;
+    if (obj) return obj;
     if (Configuration.Mode != "All") return null;
     if (Configuration.UseLegacyAttaching) return GetAttachObjectLegacy(item);
     // Child object is preferred as it won't contain ItemDrop script or weird transformation.
@@ -135,7 +135,7 @@ public class Attacher
   public static void Reload(ItemStand obj)
   {
     // Ensures a full refresh.
-    UnityEngine.Object.Destroy(obj.m_visualItem);
+    Object.Destroy(obj.m_visualItem);
     obj.m_visualName = "";
     obj.UpdateVisual();
   }
