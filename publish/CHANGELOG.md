@@ -1,3 +1,6 @@
+- v1.23
+  - Removes the feature that allows removing items from boss stones as obsolete (can be field edited with other mods).
+
 - v1.22
   - Fixed for the new update.
 

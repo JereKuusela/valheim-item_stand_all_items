@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 
 namespace ItemStandAllItems;
+
 [BepInPlugin(GUID, NAME, VERSION)]
 public class ItemStandAllItems : BaseUnityPlugin
 {
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.22";
+  const string VERSION = "1.23";
   readonly ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
@@ -75,32 +75,6 @@ public class Patches
     ZNetView.m_forceDisableInit = false;
   }
 
-  ///<summary>Allows removing from boss stones.</summary>
-  [HarmonyPatch(nameof(ItemStand.Interact)), HarmonyPostfix]
-  static void Interact(ItemStand __instance, bool hold, bool __runOriginal, ref bool __result)
-  {
-    if (!__runOriginal || __result || hold) return;
-    if (!__instance.HaveAttachment()) return;
-    if (!Attacher.Enabled(__instance)) return;
-    if (!__instance.m_nview.IsOwner())
-      __instance.m_nview.InvokeRPC("RequestOwn", []);
-    Invoking.Add(__instance);
-    __instance.CancelInvoke("DropItem");
-    __instance.InvokeRepeating("DropItem", 0f, 0.1f);
-    __result = true;
-  }
-
-
-  public static HashSet<ItemStand> Invoking = [];
-  ///<summary>Allows removing from boss stones.</summary>
-  [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPrefix]
-  static bool Prefix(ItemStand __instance)
-  {
-    if (Invoking.Contains(__instance) && !__instance.m_nview.IsOwner()) return false;
-    __instance.CancelInvoke("DropItem");
-    Invoking.Remove(__instance);
-    return true;
-  }
   ///<summary>Instantly shows the item stand when removing the item.</summary>
   [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPostfix]
   static void Postfix(ItemStand __instance)
