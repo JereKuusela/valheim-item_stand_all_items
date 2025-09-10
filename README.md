@@ -21,7 +21,7 @@ Following settings are available:
 - Custom transformations (key: `custom_transformations`): Allows setting default offset, rotation and scale for each item. See below for more info.
 - Enable transformations (default: `true`, key: `enable_transformations`): Required to customize item offset, rotation or scale. May cause lower performance with lots of item stands.
 - Hide automatically (default: `false`, key: `hide_automatically`): Hides item stands which have items.
-- Item stand ids (default: `itemstand,itemstandh`, key: `item_stands_ids`): Which item stands are affected by this mod.
+- Item stand ids (default: `itemstand,itemstandh,Placeable_HardRock`, key: `item_stands_ids`): Which item stands are affected by this mod.
 - Maximum scale (key: `maximum_scale`): Limits how big items can be made with the command `itemstand_scale`.
 - Maximum offset (key: `maximum_offset`): Limits how far items can be moved with the command `itemstand_offset`.
 - Migration command (key: `migration_command`): Whether the migration command is available for clients.

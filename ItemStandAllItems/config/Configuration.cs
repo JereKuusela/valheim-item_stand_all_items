@@ -6,6 +6,7 @@ using ServerSync;
 using Service;
 using UnityEngine;
 namespace ItemStandAllItems;
+
 public class CustomTransformation
 {
   public Vector3 Position;
@@ -93,7 +94,7 @@ public static class Configuration
     ConfigWrapper wrapper = new("itemstand_config", configFile, configSync);
     var section = "General";
     configLocked = wrapper.BindLocking(section, "Config locked", false, "When true, server sets the config values.");
-    configItemStandsIds = wrapper.Bind(section, "Item stands ids", "itemstand,itemstandh", "Item ids that are affected by this mod.");
+    configItemStandsIds = wrapper.Bind(section, "Item stands ids", "itemstand,itemstandh,Placeable_HardRock", "Item ids that are affected by this mod.");
     configItemStandsIds.SettingChanged += (s, e) => ParseItemStandIds();
     ParseItemStandIds();
     configMode = wrapper.Bind(section, "Mode", "All", new ConfigDescription("Sets which items are available.", new AcceptableValueList<string>("All", "Compatible", "Vanilla")));
