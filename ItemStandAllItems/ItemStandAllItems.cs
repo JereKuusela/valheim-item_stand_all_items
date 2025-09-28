@@ -10,7 +10,7 @@ public class ItemStandAllItems : BaseUnityPlugin
 {
   const string GUID = "item_stand_all_items";
   const string NAME = "Item Stand All Items";
-  const string VERSION = "1.24";
+  const string VERSION = "1.25";
   readonly ServerSync.ConfigSync ConfigSync = new(GUID)
   {
     DisplayName = NAME,
@@ -58,13 +58,13 @@ public class Patches
   static ItemStand? LastStand;
   ///<summary>Only post process on a change.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPrefix]
-  static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, ref bool __state)
+  static void SetVisualItemPre(ItemStand __instance, string itemName, int variant, int orientation, ref bool __state)
   {
     LastStand = __instance;
     // For some objects, the root object is returned which has a ZNetView.
     // This prevents a new ZDO being created.
     ZNetView.m_forceDisableInit = true;
-    __state = __instance.m_visualName == itemName && __instance.m_visualVariant == variant;
+    __state = __instance.m_visualName == itemName && __instance.m_visualVariant == variant && __instance.m_orientation == orientation;
   }
   ///<summary>Post processed the attached item.</summary>
   [HarmonyPatch(nameof(ItemStand.SetVisualItem)), HarmonyPostfix]
@@ -75,13 +75,6 @@ public class Patches
     ZNetView.m_forceDisableInit = false;
   }
 
-  ///<summary>Instantly shows the item stand when removing the item.</summary>
-  [HarmonyPatch(nameof(ItemStand.DropItem)), HarmonyPostfix]
-  static void Postfix(ItemStand __instance)
-  {
-    if (!Attacher.Enabled(__instance)) return;
-    Attacher.HideIfItem(__instance);
-  }
 }
 [HarmonyPatch(typeof(Terminal), nameof(Terminal.InitTerminal))]
 public class SetCommands

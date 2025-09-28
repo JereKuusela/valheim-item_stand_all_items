@@ -1,3 +1,5 @@
+- v1.25
+  - Fixes compatibility issue with ZenItemStands mod.
 
 - v1.24
   - Adds pet rock to the default itemstand list.

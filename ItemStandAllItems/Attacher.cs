@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 namespace ItemStandAllItems;
+
 public class Attacher
 {
   public static bool Enabled(ItemStand? obj) => obj != null && obj.m_nview && Configuration.ItemStandIds.Contains(Utils.GetPrefabName(obj.transform.root.gameObject).ToLower());
@@ -60,7 +61,7 @@ public class Attacher
     var hideValue = zdo.GetInt(ItemStandCommand.HashHide, 0);
     if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
     var item = obj.m_visualItem;
-    var show = !obj.HaveAttachment() || hideValue < 1;
+    var show = hideValue < 1 || string.IsNullOrEmpty(obj.m_visualName);
     // Layer check to filter the attached item.
     var renderers = obj.GetComponentsInChildren<MeshRenderer>().Where(renderer => item == null || renderer.gameObject.layer == obj.gameObject.layer);
     foreach (var renderer in renderers)
@@ -128,7 +129,7 @@ public class Attacher
   {
     // This gets called on close (server sync changes stuff) so make sure the game is actually running.
     if (!ZNet.instance || ZNet.instance.HaveStopped) return;
-    foreach (var obj in Object.FindObjectsOfType<ItemStand>())
+    foreach (var obj in Object.FindObjectsByType<ItemStand>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
       Reload(obj);
   }
 
