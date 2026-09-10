@@ -45,6 +45,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.34.2" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.46" />
   </ItemGroup>
 </Project>

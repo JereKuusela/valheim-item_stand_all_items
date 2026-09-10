@@ -48,10 +48,10 @@ public static class Configuration
   }
 
   ///<summary>Parses custom transformations from the config.</summary>
-  public static Dictionary<string, CustomTransformation> CustomTransformations()
+  public static Dictionary<int, CustomTransformation> CustomTransformations()
   {
     var split = configCustomTransformations.Value.Split('|');
-    Dictionary<string, CustomTransformation> dict = [];
+    Dictionary<int, CustomTransformation> dict = [];
     foreach (var item in split)
     {
       var args = item.Split(',').Select(value => value.Trim()).ToList();
@@ -84,8 +84,9 @@ public static class Configuration
         Rotation = rotation,
         Scale = scale
       };
-      if (!dict.ContainsKey(args[0].ToLower()))
-        dict.Add(args[0].ToLower(), transformation);
+      var hash = args[0].GetStableHashCode();
+      if (!dict.ContainsKey(hash))
+        dict.Add(hash, transformation);
     }
     return dict;
   }
@@ -108,12 +109,12 @@ public static class Configuration
     configCanMigrate = wrapper.Bind(section, "Migration command", true, "Whether the migration command is available for clients.");
   }
   ///<summary>Offsets the attached item according to the config.</summary>
-  public static void Offset(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  public static void Offset(Dictionary<int, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
-    var name = obj.m_visualName.ToLower();
+    var hash = obj.m_visualHash;
     var item = obj.m_visualItem;
-    if (transformations.TryGetValue(name, out var transformation))
+    if (transformations.TryGetValue(hash, out var transformation))
       item.transform.localPosition += transformation.Position;
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashOffset, Vector3.zero);
     if (custom != Vector3.zero)
@@ -130,24 +131,24 @@ public static class Configuration
     }
   }
   ///<summary>Rotates the attached item according to the config.</summary>
-  public static void Rotate(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  public static void Rotate(Dictionary<int, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
-    var name = obj.m_visualName.ToLower();
+    var hash = obj.m_visualHash;
     var item = obj.m_visualItem;
-    if (transformations.TryGetValue(name, out var transformation))
+    if (transformations.TryGetValue(hash, out var transformation))
       item.transform.localRotation *= Quaternion.Euler(transformation.Rotation);
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashRotation, Vector3.zero);
     if (custom != Vector3.zero)
       item.transform.localRotation *= Quaternion.Euler(custom);
   }
   ///<summary>Scales the attached item according to the config.</summary>
-  public static void Scale(Dictionary<string, CustomTransformation> transformations, ItemStand obj)
+  public static void Scale(Dictionary<int, CustomTransformation> transformations, ItemStand obj)
   {
     if (!EnableTransformations) return;
-    var name = obj.m_visualName.ToLower();
+    var hash = obj.m_visualHash;
     var item = obj.m_visualItem;
-    if (transformations.TryGetValue(name, out var transformation))
+    if (transformations.TryGetValue(hash, out var transformation))
       item.transform.localScale = Vector3.Scale(item.transform.localScale, transformation.Scale);
     var custom = obj.m_nview.GetZDO().GetVec3(ItemStandCommand.HashScale, Vector3.one);
     if (custom != Vector3.one)

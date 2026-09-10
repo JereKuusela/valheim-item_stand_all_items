@@ -61,7 +61,7 @@ public class Attacher
     var hideValue = zdo.GetInt(ItemStandCommand.HashHide, 0);
     if (hideValue == 0) hideValue = Configuration.HideAutomatically ? 1 : -1;
     var item = obj.m_visualItem;
-    var show = hideValue < 1 || string.IsNullOrEmpty(obj.m_visualName);
+    var show = hideValue < 1 || obj.m_visualHash == 0;
     // Layer check to filter the attached item.
     var renderers = obj.GetComponentsInChildren<MeshRenderer>().Where(renderer => item == null || renderer.gameObject.layer == obj.gameObject.layer);
     foreach (var renderer in renderers)
@@ -137,7 +137,7 @@ public class Attacher
   {
     // Ensures a full refresh.
     Object.Destroy(obj.m_visualItem);
-    obj.m_visualName = "";
+    obj.m_visualHash = 0;
     obj.UpdateVisual();
   }
 }

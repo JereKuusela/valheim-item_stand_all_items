@@ -1,3 +1,6 @@
+- v1.26
+  - Fixes for the new game version.
+
 - v1.25
   - Fixes compatibility issue with ZenItemStands mod.
 
@@ -9,7 +12,4 @@
   - Removes the feature that allows removing items from boss stones as obsolete (can be field edited with other mods).
 
 - v1.22
-  - Fixed for the new update.
-
-- v1.21
   - Fixed for the new update.
